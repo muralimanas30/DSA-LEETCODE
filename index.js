@@ -1,8 +1,9 @@
 const { execSync } = require("child_process");
 
 try {
-    console.log("📥 Running processSubmission.js...");
+    console.log("📥 Running get.js...");
     const nothing = execSync("node get.js", { encoding: "utf-8" });
+    console.log("📥 Running processSubmission.js...");
     const commitMessage = execSync("node processSubmission.js", { encoding: "utf-8" }).trim();
 
     if (!commitMessage) {
