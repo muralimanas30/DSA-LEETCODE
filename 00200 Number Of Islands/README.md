@@ -5,15 +5,18 @@
 **Memory:** 49.1 MB (Beats 90.48% of users)  
 
 ## 📝 **LeetCode Problem**
-| 🔢 Problem Number | 📌 Title | 🔗 Link |
-|------------------|--------------------------|--------------------------|
-| 200 | NUMBER OF ISLANDS | [LeetCode Problem](https://leetcode.com/problems/number-of-islands/) |
+
+| 🔢 Problem Number | 📌 Title           | 🔗 Link                                                     |
+| ------------------ | ----------------- | ----------------------------------------------------------- |
+| 200                | Number of Islands | [LeetCode Problem](https://leetcode.com/problems/number-of-islands/) |
 
 ---
 
 ## 💡 **Problem Explanation**
 
-Given a 2D grid map of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.  Essentially, you need to traverse the grid and identify connected components of '1's, treating each connected component as a single island.
+Given a 2D grid map of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water. Essentially, we need to traverse the grid and whenever we find a '1', we increment our island count and then explore all adjacent '1's to mark them as visited to avoid recounting the same island.
+
+---
 
 ## 🔥 **Code Implementation**
 
@@ -79,9 +82,19 @@ class Solution {
 }
 ```
 
+**Algorithm Explanation:**
+
+*   Iterate through each cell in the grid.
+*   If a cell is '1' (land), increment the `islands` count.
+*   Perform a Breadth-First Search (BFS) starting from that cell to mark all connected land cells as visited ('-'). This avoids recounting the same island.
+*   BFS explores adjacent cells (up, down, left, right) and adds valid (within bounds and '1') cells to the queue.
+*   Continue BFS until the queue is empty, meaning all connected land cells have been visited.
+
+---
+
 ## 📊 **ASCII Representation**
 
-Consider the following input grid:
+Consider the following grid:
 
 ```
 11000
@@ -90,28 +103,18 @@ Consider the following input grid:
 00011
 ```
 
-Visually, the algorithm will identify the two islands like so:
+We start at `grid[0][0]` which is '1'. We increment our island count to 1 and start BFS.
 
-```
-Island 1:  [[1, 1], [1, 1]]
-Island 2:  [[1], [1, 1]]
-```
+The BFS will explore `grid[0][1]`, `grid[1][0]`, and `grid[1][1]`, marking them as visited.  This represents one island.
 
-## 💡 **Algorithm Explanation**
+Then, the algorithm continues, skipping the '0's until it reaches `grid[2][2]`, which is '1'.  We increment the island count to 2 and start BFS again.
 
-Here's the step-by-step breakdown:
+Finally, it discovers the '1's at `grid[3][3]` and `grid[3][4]`, which comprise the third island after discovering `grid[2][2]`.
 
-*   Iterate through each cell of the grid.
-*   If a cell contains `'1'` (land), increment the `islands` counter.
-*   Perform a Breadth-First Search (BFS) starting from that cell to mark all connected land cells as visited.
-*   The BFS algorithm explores adjacent cells (up, down, left, right) and adds them to the queue if they are valid (within grid boundaries) and contain land.
-*   Mark the visited land cells by changing their value to `'-'` to avoid recounting them.
-*   Continue iterating until all cells have been processed.
-*   Return the final `islands` count.
+---
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity**: O(M \* N), where M is the number of rows and N is the number of columns in the grid.  Each cell is visited at most once.
-
-*   **Space Complexity**: O(min(M, N)) in the worst case scenario where the grid is filled with land.  The space complexity depends on the size of the queue used for BFS, which can grow up to the size of the smallest dimension of the grid if the entire grid is one island.
+*   **Time Complexity:** **O(M * N)** where M is the number of rows and N is the number of columns in the grid. In the worst case, we might visit each cell in the grid.
+*   **Space Complexity:** **O(M * N)** in the worst case, where M is the number of rows and N is the number of columns in the grid. This could occur if the entire grid is land, leading to all cells being added to the queue.
     
