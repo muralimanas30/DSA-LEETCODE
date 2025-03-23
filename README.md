@@ -1,4 +1,4 @@
-<h1 align="center">🚀 Murali Simhadri | LeetCode Profile</h1>
+<h1 align="center">🚀 MURALI SIMHADRI | LeetCode Profile</h1>
 
 <p align="center">
   <a href="https://leetcode.com/muralimanas30/">
@@ -12,13 +12,13 @@
 ## 📊 LeetCode Stats  
 
 🔥 **Username:** [muralimanas30](https://leetcode.com/muralimanas30/)  
-🌎 **Country:** 🇮🇳 India  
-📈 **Ranking:** `#253,548`  
-💯 **Total Problems Solved:** `360`  
-  - 🟩 **Easy:** `190`
-  - 🟨 **Medium:** `130`
-  - 🟥 **Hard:** `40`  
-🎯 **Contest Rating:** `1,530` | 🎟️ **Contests Attended:** `16`  
+🌎 **Country:** India  
+📈 **Ranking:** `#253548`  
+💯 **Total Problems Solved:** `397`  
+  - 🟩 **Easy:** `177`
+  - 🟨 **Medium:** `189`
+  - 🟥 **Hard:** `31`  
+🏅 **Latest Badge:** None
 
 ---
 
@@ -38,49 +38,6 @@
 
 ---
 
-## 🔥 Most Solved Topics  
-
-| Topic | Problems Solved |
-|-------|----------------|
-| 🧠 **Dynamic Programming** | 80+ |
-| 🔍 **Backtracking** | 50+ |
-| 📊 **Sorting & Searching** | 45+ |
-| 🔢 **Math & Bit Manipulation** | 35+ |
-| 🔗 **Linked List & Trees** | 40+ |
-| 📌 **Graph & DFS/BFS** | 30+ |
-
----
-
-## 📅 Recent Activity  
-
-<!--START_SECTION:leetcode-->
-<!-- Dynamic recent submissions from LeetCode API -->
-<p align="center">
-  <img src="https://leetcard.jacoblin.cool/muralimanas30?ext=activity&theme=dark" />
-</p>
-<!--END_SECTION:leetcode-->
-
----
-
-## 🏆 Badges Earned  
-
-🏅 **50 Days Badge 2025**  
-🏅 **100 Days Badge 2024**  
-🏅 **Contest Achiever 2023**  
-
----
-
-## 📈 Coding Streak  
-
-🔥 **Longest Streak:** `50+ days`  
-🔥 **Current Streak:** `10+ days`  
-
-<p align="center">
-  <img src="https://streak-stats.demolab.com?user=muralimanas30&theme=dark&hide_border=true&date_format=M%20j%5B%2C%20Y%5D" />
-</p>
-
----
-
 ## 📡 Connect with Me  
 
 🔗 **LeetCode:** [muralimanas30](https://leetcode.com/muralimanas30/)  
@@ -88,4 +45,4 @@
 
 ---
 
-🚀 *Generated on March 23, 2025 – Auto-updated Daily* 🚀
+🚀 *Generated on Sun Mar 23 2025 – Auto-updated!* 🚀
