@@ -5,47 +5,57 @@
 **Memory:** 0B (Beats 100.00% of users)  
 
 ## 📝 **LeetCode Problem**
-
-| 🔢 Problem Number | 📌 Title                            | 🔗 Link                                                                      |
-| ------------------ | ---------------------------------- | ----------------------------------------------------------------------------- |
-| 1965               | Employees With Missing Information | [LeetCode Problem](https://leetcode.com/problems/employees-with-missing-information/) |
+| 🔢 Problem Number | 📌 Title | 🔗 Link |
+|------------------|--------------------------|--------------------------|
+| 1908 | Recyclable and Low Fat Products | [LeetCode Problem](https://leetcode.com/problems/recyclable-and-low-fat-products/) |
 
 ---
 
 ## 💡 **Problem Explanation**
 
-The problem asks us to find the `employee_id` of employees whose information is incomplete.  Incomplete information means that either the employee's name is missing from the `Employees` table or their salary is missing from the `Salaries` table. We need to return a list of these `employee_id`s sorted in ascending order.
+The problem requires you to retrieve the `product_id` from a `Products` table where the product is both low fat (`low_fats = 'Y'`) and recyclable (`recyclable = 'Y'`). Essentially, you need to filter the table based on these two criteria and return the ID of the products that satisfy both conditions.
+
+**Sample Input:**
+
+Consider a `Products` table with the following data:
+
+| product_id | low_fats | recyclable |
+|------------|----------|------------|
+| 0          | Y        | N          |
+| 1          | Y        | Y          |
+| 2          | N        | Y          |
+| 3          | Y        | Y          |
+| 4          | N        | N          |
+
+**Expected Output:**
+
+The query should return the following `product_id` values:
+
+| product_id |
+|------------|
+| 1          |
+| 3          |
+
+These products are both low fat and recyclable.
 
 ## 📊 **Algorithm**
 
-*   Perform a full outer join between the `Employees` and `Salaries` tables using the `employee_id` as the join key.
-*   Filter the results to include only rows where either the `name` column from `Employees` or the `salary` column from `Salaries` is `NULL`.
-*   Select the `employee_id` from the filtered rows.
-*   Order the results in ascending order by `employee_id`.
+*   Select the `product_id` column from the `Products` table.
+*   Filter the rows based on two conditions:
+    *   `low_fats` must be equal to 'Y'.
+    *   `recyclable` must be equal to 'Y'.
+*   Return the filtered `product_id` values.
 
 ## 🔥 **Code Implementation**
 
 ```sql
-SELECT employee_id
-FROM Employees
-LEFT JOIN Salaries
-USING (employee_id)
-WHERE salary IS NULL
-
-UNION
-
-SELECT employee_id
-FROM Salaries
-LEFT JOIN Employees
-USING (employee_id)
-WHERE name IS NULL
-
-ORDER BY employee_id;
+SELECT product_id
+FROM Products
+WHERE low_fats = 'Y' AND recyclable = 'Y';
 ```
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:**  The time complexity is primarily determined by the join operation and the sorting.  In the worst case, the join operation could take **O(m*n)** time, where m and n are the sizes of the Employees and Salaries tables, respectively. However, with proper indexing, this can be improved.  The sorting operation takes **O(k log k)** where k is the number of employee IDs with missing information.
-
-*   **Space Complexity:** The space complexity depends on the size of the intermediate result set after the join and before the filtering.  In the worst case, this could be **O(m+n)**. The space required for sorting is typically **O(k)**, where `k` is the number of employee IDs in the result.
+*   **Time Complexity:** The time complexity is **O(n)**, where n is the number of rows in the `Products` table. This is because the SQL query needs to scan each row to check if it meets the specified conditions.
+*   **Space Complexity:** The space complexity is **O(1)**, meaning constant space. The query doesn't use extra space that scales with the input size. It only stores the `product_id` values that meet the conditions, and the number of such values does not affect the fundamental space usage of the query execution.
     
