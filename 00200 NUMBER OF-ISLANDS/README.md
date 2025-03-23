@@ -13,7 +13,7 @@
 
 ## 💡 **Problem Explanation**
 
-Given a 2D grid map of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.  Basically, we need to traverse the entire grid and whenever we encounter a `'1'`, we increment the island count and then perform a Breadth-First Search (BFS) or Depth-First Search (DFS) to mark all connected `'1'`s as visited, so we don't count them again.
+Given a 2D grid map of `'1'`s (land) and `'0'`s (water), you need to count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water. Simply put, you need to traverse the grid and count how many separate landmasses there are.
 
 ## 🔥 **Code Implementation**
 
@@ -81,67 +81,38 @@ class Solution {
 
 ## 📊 **ASCII Representation**
 
-Let's consider a simple grid for better visualization:
+Let's consider a simple example:
 
 ```
-Grid:
-1 1 0 0 0
-1 1 0 0 0
-0 0 1 0 0
-0 0 0 1 1
+11000
+11000
+00100
+00011
 ```
 
-1.  **Initial Grid**: Represents the input grid with lands ('1') and water ('0').
-2.  **Island Detection**: Starting from the top-left, the algorithm finds a '1'.
-3.  **BFS Traversal**: BFS explores all connected '1's and marks them as visited (e.g., changes them to '-').
+The algorithm will identify and count the connected components of '1's, which represent the islands.  Here's a visualization of how BFS might traverse the first island:
 
 ```
-After processing the first island:
-- - 0 0 0
-- - 0 0 0
-0 0 1 0 0
-0 0 0 1 1
-
-Then, the algorithm finds another '1' (the island in the middle).
+Starting point (0,0): 11000
+                    ^
+Exploring neighbors:
+(0,1): 11000
+       ^
+Marking visited and continuing...
 ```
 
-4.  **Counting Islands**: Each time a new '1' is found and processed, the island count increments.
-
-## 💡 Algorithm Explanation
-
-*   **Initialization:**
-    *   Initialize `islands = 0`.
-    *   Create a `Queue` to perform BFS.
-    *   Define `dx` and `dy` arrays for moving in four directions (up, right, down, left).
-
-*   **Grid Traversal:**
-    *   Iterate through each cell of the grid.
-    *   If a cell contains `'1'`, it means a new island is found.
-
-*   **BFS Traversal:**
-    *   Increment `islands`.
-    *   Call the `bfs` function, starting from the current cell.
-
-*   **BFS Function (`bfs`):**
-    *   Add the starting cell to the queue.
-    *   Mark the starting cell as visited (e.g., change `'1'` to `'-'` to avoid recounting).
-    *   While the queue is not empty:
-        *   Dequeue a cell from the queue.
-        *   For each of the four possible directions:
-            *   Calculate the new coordinates.
-            *   If the new coordinates are valid (within grid boundaries) and the cell contains `'1'`:
-                *   Mark the new cell as visited.
-                *   Enqueue the new cell.
-
-*   **Validity Check (`isValid`):**
-    *   Check if the given coordinates are within the grid boundaries.
-
-*   **Return:**
-    *   Return the final `islands` count.
+## 💡**Algorithm Explanation**
+*   Iterate through each cell of the grid.
+*   If a cell is '1' (land), increment the island count and start a Breadth-First Search (BFS) to explore the connected land.
+*   In the BFS:
+    *   Mark the current land cell as visited (e.g., change it to '-').
+    *   Explore its four neighbors (up, down, left, right).
+    *   If a neighbor is valid (within bounds) and is land ('1'), add it to the queue and mark it as visited.
+*   Continue BFS until all connected land cells of the current island are visited.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** **O(M * N)**, where M is the number of rows and N is the number of columns in the grid.  Each cell can be visited at most once.
+*   **Time Complexity**: O(M * N), where M is the number of rows and N is the number of columns in the grid.  Each cell is visited at most once.
 
-*   **Space Complexity:** **O(M * N)** in the worst-case scenario, where the entire grid is filled with land ('1') and the queue can contain all the cells during BFS.
+*   **Space Complexity**: O(min(M, N)) in the worst case. This happens when the grid is filled with land, and the queue in BFS can grow up to the size of the smaller dimension of the grid.
     
