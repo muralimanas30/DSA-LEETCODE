@@ -6,23 +6,23 @@
 
 ## 📝 **LeetCode Problem**
 
-| 🔢 Problem Number | 📌 Title           | 🔗 Link                                                    |
-| ------------------ | ----------------- | --------------------------------------------------------- |
+| 🔢 Problem Number | 📌 Title           | 🔗 Link                                                                 |
+| ------------------ | ----------------- | ----------------------------------------------------------------------- |
 | 200                | Number of Islands | [LeetCode Problem](https://leetcode.com/problems/number-of-islands/) |
 
 ---
 
 ## 💡 **Problem Explanation**
 
-Given a 2D grid map of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.  Essentially, you need to traverse the grid and identify connected components of '1's, where each connected component represents an island.
+Given a 2D grid map of `'1'`s (land) and `'0'`s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.  Essentially, you need to traverse the grid and find connected components of '1's, treating each component as an island.
 
 ## 📊 **Algorithm**
 
 *   Iterate through each cell of the grid.
 *   If a cell contains '1' (land), increment the island count.
-*   Perform a Breadth-First Search (BFS) starting from that cell to mark all connected land cells as visited (e.g., by changing them to '-').
-*   The BFS explores adjacent land cells in all four directions (up, down, left, right).
-*   A helper function `isValid` verifies that the given row and column indices are within the bounds of the grid.
+*   Perform a Breadth-First Search (BFS) starting from that cell to explore the entire island and mark all connected '1's as visited to avoid recounting.
+*   The BFS explores adjacent cells (up, down, left, right) and continues the exploration if they are also land ('1').
+*   The algorithm continues until all cells in the grid have been processed.
 
 ## 🔥 **Code Implementation**
 
@@ -42,8 +42,8 @@ class Solution {
     }
 
     Queue<Pair> qu = new LinkedList<>();
-    int[] dx = {0, 1, 0, -1}; // Possible movements in x direction.
-    int[] dy = {-1, 0, 1, 0}; // Possible movements in y direction.
+    int[] dx = {0, 1, 0, -1};
+    int[] dy = {-1, 0, 1, 0};
 
     public int numIslands(char[][] grid) {
         int rows = grid.length;
@@ -93,44 +93,72 @@ class Solution {
 Consider the following grid:
 
 ```
-   0 1 2 3 4
-0  1 1 0 0 0
-1  1 1 0 0 0
-2  0 0 1 0 0
-3  0 0 0 1 1
+11000
+11000
+00100
+00011
 ```
 
-Here, '1' represents land, and '0' represents water.  The goal is to count how many distinct land masses (islands) are present in this grid.
+We can visualize the BFS traversal for identifying islands.
 
 ## 📊 **WORKING**
 
-Let's trace the execution with the following input:
+Let's trace the execution with the input:
 
 ```
-grid = [
-  ["1","1","1","1","0"],
-  ["1","1","0","1","0"],
-  ["1","1","0","0","0"],
-  ["0","0","0","0","0"]
-]
+11000
+11000
+00100
+00011
 ```
 
-1.  **Initialization:** `islands = 0`.
-2.  **Iteration:** The code iterates through the grid.
-3.  **First '1' Encountered (0,0):** `grid[0][0] == '1'`, so `islands` becomes 1.  BFS is initiated from (0,0).
-4.  **BFS:**
-    *   (0,0) is marked as visited (changed to '-').
-    *   Neighbors (0,1) and (1,0) are checked.
-    *   (0,1) contains '1', so it's marked visited and added to the queue.
-    *   (1,0) contains '1', so it's marked visited and added to the queue.
-    *   The BFS continues, exploring the connected components of '1's starting from (0,0), (0,1), and (1,0).  All '1's in the top-left cluster are marked visited.
-5.  **Next '1' Encountered (0,4), (1,3), (2,0):**  These lands are now covered by the algo so count will not be incremented.
-6.  **Iteration Continues:** The code continues iterating. Since we have changed the value to '-' so that it not increment islands again.
-7.  **Return:** Finally, the function returns `islands`, which is 1.
+1.  **Initial Grid:**
+
+    ```
+    11000
+    11000
+    00100
+    00011
+    ```
+
+2.  **First Island Detection:**
+    *   `grid[0][0]` is '1'. `islands = 1`.
+    *   BFS starts at (0, 0).
+    *   The connected component of '1's is marked as visited (e.g., changed to '-').
+
+    ```
+    --000
+    --000
+    00100
+    00011
+    ```
+
+3.  **Second Island Detection:**
+    *   The loop continues; `grid[2][2]` is '1'.  `islands = 2`.
+    *   BFS starts at (2, 2).
+
+    ```
+    --000
+    --000
+    00-00
+    00011
+    ```
+
+4.  **Third Island Detection:**
+    *   The loop continues; `grid[3][3]` is '1'.  `islands = 3`.
+    *   BFS starts at (3, 3).
+
+    ```
+    --000
+    --000
+    00-00
+    000--
+    ```
+
+5.  **Result:** The function returns `3`.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** O(M \* N), where M is the number of rows and N is the number of columns in the grid.  Each cell in the grid is visited at most once during the BFS.
-
-*   **Space Complexity:** O(M \* N) in the worst case. This occurs when the entire grid is filled with '1's, and the queue in the BFS might contain all the cells in the grid.
+*   **Time Complexity:** O(M \* N), where M is the number of rows and N is the number of columns in the grid.  We visit each cell at most once.
+*   **Space Complexity:** O(M \* N) in the worst-case scenario, where the entire grid is filled with land ('1') and the BFS queue will contain all the cells.
     
