@@ -2,21 +2,20 @@
     
 **Language:** Java  
 **Runtime:** 5 ms (Beats 79.31% of users)  
-**Memory:** 42.3 MB (Beats 60.91% of users)  
+**Memory:** 42 MB (Beats 80.49% of users)  
 
 ## 📝 **LeetCode Problem**
 | 🔢 Problem Number | 📌 Title | 🔗 Link |
 |------------------|--------------------------|--------------------------|
-| 763 | Partition Labels | [LeetCode Problem](https://leetcode.com/problems/partition-labels/) |
+| 768 | PARTITION LABELS | [LeetCode Problem](https://leetcode.com/problems/partition-labels/) |
 
 ---
 
 ## 💡 **Problem Explanation**
 
-You are given a string `s`. You need to partition this string into as many parts as possible such that each letter appears in at most one part.  Return a list of integers representing the size of these parts.
+Given a string `s` consisting of lowercase English letters, partition `s` into as many parts as possible such that each letter appears in at most one part. Return a list of integers representing the size of these parts.
 
-**Example:**
-
+**Example 1:**
 ```
 Input: s = "ababcbacadefegdehijhklij"
 Output: [9,7,8]
@@ -26,39 +25,39 @@ This is a partition so that each letter appears in at most one part.
 A partition like "ababcbacadefegde", "hijhklij" is incorrect, because it splits s into less parts.
 ```
 
-The goal is to find the largest possible chunks where each character appears only in that chunk.
+**Example 2:**
+```
+Input: s = "eccbbbbdec"
+Output: [10]
+```
 
 ## 📊 **Algorithm**
-
-*   Create an array to store the last occurrence of each character in the string.
-*   Iterate through the string:
-    *   Keep track of the maximum last occurrence seen so far.
-    *   If the current index matches the maximum last occurrence, it means we've reached the end of a partition.
-    *   Add the size of the partition to the result list.
+* Initialize an array to store the last occurrence of each character in the string.
+* Iterate through the string to populate the last occurrence array.
+* Initialize variables to track the maximum last index and the end of the last partition.
+* Iterate through the string again:
+    * Update the maximum last index seen so far.
+    * If the current index matches the maximum last index, it means we've reached the end of a partition.
+    * Record the size of the partition and update the last partition end.
+* Return the list of partition sizes.
 
 ## 🔥 **Code Implementation**
 
 ```java
-import java.util.ArrayList;
-import java.util.List;
-
 class Solution {
     public List<Integer> partitionLabels(String s) {
         int[] lastOccurrence = new int[26];
         List<Integer> partitionSizes = new ArrayList<>();
         
-        // Store the last index of each character
         for (int i = 0; i < s.length(); i++) {
             lastOccurrence[s.charAt(i) - 'a'] = i;
         }
 
         int maxLastIndex = 0, lastPartitionEnd = -1;
 
-        // Iterate through the string to find partitions
         for (int i = 0; i < s.length(); i++) {
             maxLastIndex = Math.max(maxLastIndex, lastOccurrence[s.charAt(i) - 'a']);
             
-            // If we've reached the end of a partition
             if (i == maxLastIndex) {
                 partitionSizes.add(i - lastPartitionEnd);
                 lastPartitionEnd = i;
@@ -68,49 +67,49 @@ class Solution {
         return partitionSizes;
     }
 }
+
+/*
+   Optimized Solution:
+   - Uses an `int[26]` instead of a HashMap to store the last occurrence of each character.
+   - Reduces storage overhead and improves lookup speed.
+   - Iterates through the string twice (O(N) time complexity).
+   - Uses O(1) extra space (apart from the output list).
+   - Efficient, space-optimized, and fast!
+*/
 ```
 
 ## 📊 **ASCII Representation**
-
-This problem doesn't directly involve grids or trees, so an ASCII representation isn't the most relevant visualization. However, we can conceptualize it as identifying segments within a line (the string).
+N/A (This problem doesn't involve grids or trees.)
 
 ## 📊 **WORKING**
 
-Let's trace the execution with the example input `s = "ababcbacadefegdehijhklij"`:
+Let's walk through the example `s = "ababcbacadefegdehijhklij"`.
 
-1.  **`lastOccurrence` Initialization**:
+1.  **Last Occurrence Array:**
+    After the first loop, `lastOccurrence` will contain the last index of each character:
 
-    The `lastOccurrence` array stores the last index of each character. For example:
+    ```
+    a: 8, b: 5, c: 7, d: 14, e: 15, f: 11, g: 13, h: 19, i: 22, j: 23, k: 20, l: 21
+    ```
 
-    *   `lastOccurrence['a' - 'a'] = 8`
-    *   `lastOccurrence['b' - 'a'] = 5`
-    *   `lastOccurrence['c' - 'a'] = 7`
-    *   `lastOccurrence['d' - 'a'] = 14`
-    *   `lastOccurrence['e' - 'a'] = 15`
-    *   ... and so on.
+2.  **Partitioning:**
 
-2.  **Iteration and Partitioning**:
-
-    *   `i = 0`, `s.charAt(i) = 'a'`, `maxLastIndex = 8`
-    *   `i = 1`, `s.charAt(i) = 'b'`, `maxLastIndex = 8`
+    *   **i = 0:** `maxLastIndex = 8` (last occurrence of 'a').
+    *   **i = 1:** `maxLastIndex = max(8, 5) = 8`.
     *   ...
-    *   `i = 8`, `s.charAt(i) = 'a'`, `maxLastIndex = 8`. Now, `i == maxLastIndex`.  A partition is found.  `partitionSizes.add(8 - (-1)) = 9`.  `lastPartitionEnd = 8`.
-
-    *   `i = 9`, `s.charAt(i) = 'd'`, `maxLastIndex = 14`
-    *   `i = 10`, `s.charAt(i) = 'e'`, `maxLastIndex = 15`
+    *   **i = 7:** `maxLastIndex = max(8, 7) = 8`.
+    *   **i = 8:** `maxLastIndex = max(8, 8) = 8`. `i == maxLastIndex`.  Partition size = `8 - (-1) = 9`. `lastPartitionEnd = 8`.  `partitionSizes = [9]`.
+    *   **i = 9:** `maxLastIndex = 14` (last occurrence of 'd').
     *   ...
-    *   `i = 15`, `s.charAt(i) = 'e'`, `maxLastIndex = 15`. Now, `i == maxLastIndex`. A partition is found.  `partitionSizes.add(15 - 8) = 7`. `lastPartitionEnd = 15`.
-
-    *   `i = 16`, `s.charAt(i) = 'h'`, `maxLastIndex = 22`
+    *   **i = 15:** `maxLastIndex = 15`. `i == maxLastIndex`. Partition size = `15 - 8 = 7`. `lastPartitionEnd = 15`. `partitionSizes = [9, 7]`.
+    *   **i = 16:** `maxLastIndex = 22` (last occurrence of 'h').
     *   ...
-    *   `i = 22`, `s.charAt(i) = 'j'`, `maxLastIndex = 22`. Now, `i == maxLastIndex`. A partition is found. `partitionSizes.add(22 - 15) = 8`.  `lastPartitionEnd = 22`.
+    *   **i = 23:** `maxLastIndex = 23`. `i == maxLastIndex`. Partition size = `23 - 15 = 8`. `lastPartitionEnd = 23`. `partitionSizes = [9, 7, 8]`.
 
-3.  **Result**:
-
-    The final result is `[9, 7, 8]`.
+    Final Result: `[9, 7, 8]`
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** **O(N)**, where N is the length of the string `s`. We iterate through the string twice (once to populate `lastOccurrence` and once to find the partitions).
-*   **Space Complexity:** **O(1)** because the `lastOccurrence` array has a fixed size of 26 (for the English alphabet), regardless of the input string's length.
+*   **Time Complexity:** **O(N)**, where N is the length of the string `s`.  We iterate through the string twice.
+*   **Space Complexity:** **O(1)**, as the `lastOccurrence` array has a fixed size of 26, independent of the input string length.  The space used by the output `partitionSizes` list is not considered auxiliary space.
     

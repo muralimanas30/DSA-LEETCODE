@@ -21,3 +21,12 @@ class Solution {
         return partitionSizes;
     }
 }
+
+/*
+   Optimized Solution:
+   - Uses an `int[26]` instead of a HashMap to store the last occurrence of each character.
+   - Reduces storage overhead and improves lookup speed.
+   - Iterates through the string twice (O(N) time complexity).
+   - Uses O(1) extra space (apart from the output list).
+   - Efficient, space-optimized, and fast!
+*/
