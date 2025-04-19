@@ -13,45 +13,42 @@
 
 ## 💡 **Problem Explanation**
 
-The "Count the Number of Fair Pairs" problem asks you to find the number of pairs `(i, j)` in an array `nums` such that `i < j` and `lower <= nums[i] + nums[j] <= upper`.  In simpler terms, you need to count how many pairs of numbers in the array add up to a value within a specified range (inclusive).
+The problem asks you to count the number of "fair pairs" in a given array `nums`.  A pair `(i, j)` is considered fair if `i < j` and `lower <= nums[i] + nums[j] <= upper`, where `lower` and `upper` are given integer bounds. In simpler terms, you need to find how many pairs of numbers in the array sum up to a value within the specified range.
 
 **Example:**
 
-`nums = [0, 1, 7, 4, 4, 5], lower = 3, upper = 6`
+Let's say `nums = [0, 1, 7, 4, 4, 5]`, `lower = 3`, and `upper = 6`.
 
-The fair pairs are:
+We need to find pairs `(i, j)` such that `nums[i] + nums[j]` falls between 3 and 6 (inclusive).
 
-*   (0, 3): nums\[0] + nums\[3] = 0 + 4 = 4
-*   (0, 4): nums\[0] + nums\[4] = 0 + 4 = 4
-*   (1, 3): nums\[1] + nums\[3] = 1 + 4 = 5
-*   (1, 4): nums\[1] + nums\[4] = 1 + 4 = 5
-*   (1, 5): nums\[1] + nums\[5] = 1 + 5 = 6
+- `nums[0] + nums[1] = 0 + 1 = 1` (not fair)
+- `nums[0] + nums[2] = 0 + 7 = 7` (not fair)
+- `nums[0] + nums[3] = 0 + 4 = 4` (fair)
+- `nums[0] + nums[4] = 0 + 4 = 4` (fair)
+- `nums[0] + nums[5] = 0 + 5 = 5` (fair)
+- `nums[1] + nums[2] = 1 + 7 = 8` (not fair)
+- `nums[1] + nums[3] = 1 + 4 = 5` (fair)
+- `nums[1] + nums[4] = 1 + 4 = 5` (fair)
+- `nums[1] + nums[5] = 1 + 5 = 6` (fair)
+- `nums[2] + nums[3] = 7 + 4 = 11` (not fair)
+- `nums[2] + nums[4] = 7 + 4 = 11` (not fair)
+- `nums[2] + nums[5] = 7 + 5 = 12` (not fair)
+- `nums[3] + nums[4] = 4 + 4 = 8` (not fair)
+- `nums[3] + nums[5] = 4 + 5 = 9` (not fair)
+- `nums[4] + nums[5] = 4 + 5 = 9` (not fair)
 
-Therefore, the output should be 5.
-
----
+The fair pairs are: (0, 3), (0, 4), (0, 5), (1, 3), (1, 4), (1, 5).  Therefore, the output would be 6.
 
 ## 📊 **Algorithm**
 
-Here's a breakdown of the algorithm used in the code:
+Here's the algorithm to solve this problem:
 
-*   Sort the input array `nums` to enable the use of binary search. The boolean variable named `first` inside `countFairPairs()` makes sure that `Arrays.sort(nums)` is executed only once, i.e. the first time `countFairPairs()` is called.
-
-*   Iterate through the `nums` array using a `for` loop. For each element `nums[i]`, find the range of indices `j` (where `j > i`) such that `lower <= nums[i] + nums[j] <= upper`.
-
-*   Use a helper function `binarySearch` to efficiently find the lower and upper bounds of valid `nums[j]` values.
-
-    *   The `binarySearch` function takes the array, a starting index, the target value, and a boolean `lower` flag. The `lower` flag determines whether we are searching for the lower or upper bound.
-
-    *   If `lower` is true, the function finds the index of the first element greater than or equal to `val`.
-
-    *   If `lower` is false, the function finds the index of the last element less than or equal to `val`.
-
-*   Calculate the number of fair pairs for the current `nums[i]` by subtracting the lower bound index from the upper bound index and adding 1.
-
-*   Accumulate the counts of fair pairs from each iteration to get the final result.
-
----
+*   **Sort the Array:** Sort the input array `nums` in ascending order. This allows us to use binary search efficiently.
+*   **Iterate and Binary Search:**
+    *   Iterate through each element `nums[i]` in the sorted array.
+    *   For each `nums[i]`, use binary search to find the range of indices `j` (where `j > i`) such that `lower <= nums[i] + nums[j] <= upper`.  This can be done by finding the first `j` where `nums[i] + nums[j] >= lower` and the last `j` where `nums[i] + nums[j] <= upper`.
+    *   The number of elements within that range is the number of fair pairs involving `nums[i]`.
+*   **Accumulate the Count:**  Sum up the counts of fair pairs found for each `nums[i]` to get the total number of fair pairs.
 
 ## 🔥 **Code Implementation**
 
@@ -105,65 +102,60 @@ class Solution {
 ```
 
 ## 📊 **ASCII Representation**
-
-This problem doesn't involve grids or trees, so an ASCII representation isn't directly applicable.
+Not applicable, as this isn't a grid-based or tree-based problem.
 
 ## 📊 **WORKING**
 
-Let's walk through the sample input `nums = [0, 1, 7, 4, 4, 5], lower = 3, upper = 6`.
+Let's trace the execution with the example `nums = [0, 1, 7, 4, 4, 5]`, `lower = 3`, and `upper = 6`.
 
-1.  **Sort the array**: `nums` becomes `[0, 1, 4, 4, 5, 7]`.
+1.  **Sort `nums`:** `nums` becomes `[0, 1, 4, 4, 5, 7]`.
 
-2.  **Iterate through `nums`**:
+2.  **Outer Loop (i = 0): `nums[0] = 0`**
+    *   `lower - nums[0] = 3 - 0 = 3`
+    *   `upper - nums[0] = 6 - 0 = 6`
+    *   `binarySearch(nums, 1, 3, true)`:  Finds the index of the first element >= 3, which is `nums[2] = 4` at index 2.  So, `lesserNums = 2`.
+    *   `binarySearch(nums, 1, 6, false)`: Finds the index of the last element <= 6, which is `nums[4] = 5` at index 4. So, `higherNums = 4`.
+    *   `count += 4 - 2 + 1 = 3`. (Pairs: (0, 2), (0, 3), (0, 4))
 
-    *   **i = 0, nums[i] = 0**:
-        *   `lower - nums[i] = 3 - 0 = 3`
-        *   `upper - nums[i] = 6 - 0 = 6`
-        *   `binarySearch(nums, 1, 3, true)` returns 2 (index of first number >= 3 which is 4).
-        *   `binarySearch(nums, 1, 6, false)` returns 4 (index of last number <= 6 which is 5).
-        *   `count += 4 - 2 + 1 = 3`
+3.  **Outer Loop (i = 1): `nums[1] = 1`**
+    *   `lower - nums[1] = 3 - 1 = 2`
+    *   `upper - nums[1] = 6 - 1 = 5`
+    *   `binarySearch(nums, 2, 2, true)`: Finds the index of the first element >= 2, which is `nums[2] = 4` at index 2.  So, `lesserNums = 2`.
+    *   `binarySearch(nums, 2, 5, false)`: Finds the index of the last element <= 5, which is `nums[4] = 5` at index 4.  So, `higherNums = 4`.
+    *   `count += 4 - 2 + 1 = 3`. (Pairs: (1, 2), (1, 3), (1, 4))
 
-    *   **i = 1, nums[i] = 1**:
-        *   `lower - nums[i] = 3 - 1 = 2`
-        *   `upper - nums[i] = 6 - 1 = 5`
-        *   `binarySearch(nums, 2, 2, true)` returns 2 (index of first number >= 2 which is 4).
-        *   `binarySearch(nums, 2, 5, false)` returns 4 (index of last number <= 5 which is 5).
-        *   `count += 4 - 2 + 1 = 3`
+4.  **Outer Loop (i = 2): `nums[2] = 4`**
+    *   `lower - nums[2] = 3 - 4 = -1`
+    *   `upper - nums[2] = 6 - 4 = 2`
+    *   `binarySearch(nums, 3, -1, true)`: Finds the index of the first element >= -1, which is `nums[3] = 4` at index 3.  So, `lesserNums = 3`.
+    *   `binarySearch(nums, 3, 2, false)`: Finds the index of the last element <= 2. There is no number less than 2 so that will return `2-1 = 1` that not in range. In this case the function will return `start -1` which is `3-1 = 2` So, `higherNums = 2`.
+    *   `count += 2 - 3 + 1 = 0`. (no pairs)
 
-    *   **i = 2, nums[i] = 4**:
-        *   `lower - nums[i] = 3 - 4 = -1`
-        *   `upper - nums[i] = 6 - 4 = 2`
-        *   `binarySearch(nums, 3, -1, true)` returns 3 (index of first number >= -1 which is 4).
-        *   `binarySearch(nums, 3, 2, false)` returns 2 (index of last number <= 2 which is 4) - this is incorrect it should be 3.
-        *   `count += 4 - 2 + 1 = 3`
+5.  **Outer Loop (i = 3): `nums[3] = 4`**
+    *   `lower - nums[3] = 3 - 4 = -1`
+    *   `upper - nums[3] = 6 - 4 = 2`
+    *   `binarySearch(nums, 4, -1, true)`: Finds the index of the first element >= -1, which is `nums[4] = 5` at index 4.  So, `lesserNums = 4`.
+    *   `binarySearch(nums, 4, 2, false)`: Finds the index of the last element <= 2. There is no number less than 2 so that will return `3`
+    *   `count += 3 - 4 + 1 = 0`. (no pairs)
 
-    *   **i = 3, nums[i] = 4**:
-        *   `lower - nums[i] = 3 - 4 = -1`
-        *   `upper - nums[i] = 6 - 4 = 2`
-        *   `binarySearch(nums, 4, -1, true)` returns 4 (index of first number >= -1 which is 5).
-        *   `binarySearch(nums, 4, 2, false)` returns 3 (index of last number <= 2 which is 5) - this is incorrect it should be 4
-        *   `count += 4 - 3 + 1 = 2`
+6.  **Outer Loop (i = 4): `nums[4] = 5`**
+    *   `lower - nums[4] = 3 - 5 = -2`
+    *   `upper - nums[4] = 6 - 5 = 1`
+    *   `binarySearch(nums, 5, -2, true)`: Finds the index of the first element >= -2, which is `nums[5] = 7` at index 5. So, `lesserNums = 5`.
+    *   `binarySearch(nums, 5, 1, false)`: Finds the index of the last element <= 1. It is `4`.
+    *   `count += 2 - 5 + 1 = 0`. (no pairs)
+7.  **Outer Loop (i = 5): `nums[5] = 7`**
+    *   `lower - nums[5] = 3 - 7 = -4`
+    *   `upper - nums[5] = 6 - 7 = -1`
+    *   `binarySearch(nums, 6, -4, true)`: Finds the index of the first element >= -4. index out of range so that will return `6` So, `lesserNums = 6`.
+    *   `binarySearch(nums, 6, -1, false)`: Finds the index of the last element <= -1. index out of range so that will return `5`.
+    *   `count += 5 - 6 + 1 = 0`. (no pairs)
 
-    *   **i = 4, nums[i] = 5**:
-        *   `lower - nums[i] = 3 - 5 = -2`
-        *   `upper - nums[i] = 6 - 5 = 1`
-        *   `binarySearch(nums, 5, -2, true)` returns 5 (index of first number >= -2 which is 7).
-        *   `binarySearch(nums, 5, 1, false)` returns 4 (index of last number <= 1 which is 7) - this is incorrect it should be 5
-        *   `count += 5 - 4 + 1 = 2`
-
-    *   **i = 5, nums[i] = 7**:
-        *   `lower - nums[i] = 3 - 7 = -4`
-        *   `upper - nums[i] = 6 - 7 = -1`
-        *   `binarySearch(nums, 6, -4, true)` returns 6 since start >= nums.length.
-        *   `binarySearch(nums, 6, -1, false)` returns 5 since start >= nums.length - 1.
-        *    Thus start - 1, giving nums.length -1 i.e. 5
-        *   `count += 6 - 5 + 1 = 1`
-
-The final `count` will store 3 + 3 + 3 + 2 + 2 + 1 = 5 (incorrectly). The initial sample of the prompt gives 5 but the result is 14!
+Finally, the accumulated `count` is `3 + 3 + 0 + 0 + 0+ 0 = 6`.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** **O(N log N)**, where N is the length of the `nums` array. The `Arrays.sort()` method takes O(N log N) time. The loop iterates through the array in O(N) time, and the binary search inside the loop takes O(log N) time, making the overall time complexity O(N log N).
+*   **Time Complexity:** The dominant operation is the sorting which takes **O(n log n)** time. The binary search within the loop contributes an additional **O(n log n)** since we do a binary search for each of the n element. Therefore the total time complexity is **O(n log n)**.
 
-*   **Space Complexity:** **O(1)**. The algorithm sorts the array in place and uses a constant amount of extra space for variables. The space used by `Arrays.sort()` is implementation dependent, but is often O(log N) at most, which does not affect our O(1) complexity.
+*   **Space Complexity:** The space complexity is **O(1)**. because the sorting is done in place, and binary search is only using variables, without data structures.
     
