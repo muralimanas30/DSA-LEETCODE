@@ -6,41 +6,42 @@
 
 ## 💡 **Problem Explanation**
 
-The problem asks us to simulate a series of transformations on a given string `s` for `t` iterations. Each character in the string represents a number from 0 to 25 ('a' to 'z'). In each transformation, every character is replaced based on the following rule:
-
-- If a character is 'z' (25), it transforms into 'a' (0) and 'b' (1).
-- Otherwise, a character transforms into the next character in the alphabet (e.g., 'a' becomes 'b', 'b' becomes 'c', and so on).
-
-The goal is to find the total length of the string after `t` transformations.  Since the length may be very large, we need to return the length modulo 1000000007.
+The problem asks us to perform a series of transformations on a given string `s` for `t` times. Initially, each character in the string is represented by its corresponding position in the English alphabet (a=0, b=1, ..., z=25). In each transformation, we replace each character with the next character in the alphabet. If a character is 'z', it transforms into 'a' and 'b'. The goal is to determine the final length of the string after `t` transformations, modulo 1000000007. Since the number of transformations affect each character we count how many characters are on each alphabet index.
 
 **Example:**
 
-Let's say `s = "abc"` and `t = 1`.
+-   **Input:** `s` = "abc", `t` = 1
+-   **Output:** 3
 
-1.  'a' becomes 'b'
-2.  'b' becomes 'c'
-3.  'c' becomes 'd'
+**Explanation:**
 
-So, the resulting string is `"bcd"` and the length is 3.
+1.  Initial string: "abc"
+2.  After 1 transformation: "bcd"
+3.  Length of the string after transformation: 3
 
-Let's say `s = "z"` and `t = 1`.
+-   **Input:** `s` = "z", `t` = 1
+-   **Output:** 2
 
-1. 'z' becomes 'a' and 'b'
-so, the resulting string is "ab" and the length is 2.
+**Explanation:**
+
+1.  Initial string: "z"
+2.  After 1 transformation: "ab"
+3.  Length of the string after transformation: 2
 
 ## 📊 **Algorithm**
 
-1.  **Initialize Frequency Arrays:** Create two arrays, `arr` and `forNext`, of size 26 to store the frequency of each character ('a' to 'z').  Initially, `forNext` will store the frequencies of characters in the original string `s`.
-2.  **Iterate through Transformations:** Loop `t` times to simulate the transformations.
-3.  **Update Frequencies:** In each iteration:
-    *   Copy `forNext` to `arr` to keep track of the previous frequencies.
-    *   Reset `forNext` to a new array of zeros.
-    *   Iterate through the `arr` frequency array. For each character:
-        *   If the frequency of a character is greater than 0:
-            *   If the character is 'z' (index 25), update the frequencies of 'a' (index 0) and 'b' (index 1) in `forNext`.
-            *   Otherwise, increment the frequency of the next character (index + 1) in `forNext`.
-4.  **Calculate Total Length:** After all transformations, iterate through the `forNext` array and sum up the frequencies of all characters.  Take the modulo 1000000007 to prevent overflow.
-5.  **Return Length:** Return the total length after the transformations.
+*   Initialize `arr` and `forNext` arrays of size 26 to store counts of each character at each step.
+*   Populate `forNext` with the initial counts of characters in string `s`.
+*   Iterate `t` times, performing the transformation in each iteration.
+*   In each iteration:
+    *   Copy `forNext` to `arr` to store the counts from the previous transformation.
+    *   Reset `forNext` to zero.
+    *   Iterate through the `arr`:
+        *   If the count at index `i` is greater than 0, perform the character transformation.
+        *   If `i` is 25 (i.e., 'z'), transform into 'a' and 'b' by adding the count to indices 0 and 1 in `forNext`.
+        *   Otherwise, transform into the next character by adding the count to index `i+1` in `forNext`.
+*   Calculate the final length of the string by summing all elements in `forNext` modulo 1000000007.
+*   Return the final length.
 
 ## 🔥 **Code Implementation**
 
@@ -75,28 +76,37 @@ class Solution {
 
 ## 📊 **ASCII Representation**
 
-This problem doesn't directly involve grids or trees, so an ASCII representation isn't applicable. However, you can imagine the characters 'a' to 'z' as nodes in a graph where 'z' points to 'a' and 'b', and every other character points to its successor.
+Not applicable for this problem.
 
 ## 📊 **WORKING**
 
-Let's trace the execution with `s = "az"` and `t = 1`.
+Let's consider the example input `s` = "abc", `t` = 1.
 
-Initial state: `forNext = [1, 0, 0, ..., 0, 1]` (one 'a' and one 'z')
+1. **Initial state:**
 
-**Iteration 1:**
+`s = "abc"`
 
-1. `arr` becomes `[1, 0, 0, ..., 0, 1]`
-2. `forNext` is reset to `[0, 0, ..., 0]`
-3. Iterate through `arr`:
-    *   `i = 0` ('a'): `count = 1`. `forNext[1]` becomes `(0 + 1) % 1000000007 = 1`. `forNext` is now `[0, 1, 0, ..., 0]`
-    *   `i = 25` ('z'): `count = 1`. `forNext[0]` becomes `(0 + 1) % 1000000007 = 1`. `forNext[1]` becomes `(1 + 1) % 1000000007 = 2`. `forNext` is now `[1, 2, 0, ..., 0]`
+`forNext = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]` (counts of a, b, c are 1)
 
-Final state: `forNext = [1, 2, 0, ..., 0]` (one 'a' and two 'b's)
+2. **Transformation (t = 1):**
 
-Total length = `(1 + 2) % 1000000007 = 3`.
+*   `arr = forNext` (arr now also contains the counts of a, b, c)
+*   `forNext` is reset to all zeros.
+*   Loop through `arr`:
+    *   `i = 0` ('a'): `forNext[1] = (forNext[1] + 1) % mod`  (`forNext[1]` becomes 1)
+    *   `i = 1` ('b'): `forNext[2] = (forNext[2] + 1) % mod`  (`forNext[2]` becomes 1)
+    *   `i = 2` ('c'): `forNext[3] = (forNext[3] + 1) % mod`  (`forNext[3]` becomes 1)
+
+`forNext = [0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`
+
+3.  **Final length calculation:**
+
+`len = (0 + 1 + 1 + 1 + 0 + ... + 0) % mod = 3`
+
+Therefore, the final answer is 3.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** O(t \* 26), where `t` is the number of transformations.  The outer loop runs `t` times, and the inner loop iterates through the 26 characters of the alphabet.
-*   **Space Complexity:** O(1). We use two arrays, `arr` and `forNext`, both of size 26, which is constant space regardless of the input size. Therefore, the space complexity is **O(1)**.
+*   **Time Complexity:** **O(t * 26)**, where `t` is the number of transformations. We iterate through all 26 characters in the alphabet for each transformation.
+*   **Space Complexity:** **O(1)**, as we use two arrays `arr` and `forNext` of fixed size 26, regardless of the input string length.
     
