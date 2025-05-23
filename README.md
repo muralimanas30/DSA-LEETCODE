@@ -34,11 +34,10 @@
   <img src="https://leetcard.jacoblin.cool/muralimanas30?theme=dark&font=Karma&ext=heatmap" />
 </p>
 
-<!-- #### 🏆 **Problems Solved by Difficulty**:
-![Easy](https://progress-bar.dev/174/?title=Easy&width=150&color=green)  
-![Medium](https://progress-bar.dev/170/?title=Medium&width=150&color=yellow)  
-![Hard](https://progress-bar.dev/18/?title=Hard&width=150&color=red) -->
-
+#### 🏆 **Problems Solved by Difficulty**:
+![Easy](https://progress-bar.dev/174/?title=Easy&width=150&color=green)
+![Medium](https://progress-bar.dev/170/?title=Medium&width=150&color=yellow)
+![Hard](https://progress-bar.dev/18/?title=Hard&width=150&color=red)
 
 ### 💻 Language Distribution:
 <p align="center">
@@ -94,3 +93,4 @@
 
 
 ---
+_This README was automatically generated using a script._ 😊
