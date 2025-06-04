@@ -7,39 +7,55 @@
 ## 📝 **LeetCode Problem**
 | 🔢 Problem Number | 📌 Title | 🔗 Link |
 |------------------|--------------------------|--------------------------|
-| 10 | Regular Expression Matching | [LeetCode Problem](https://leetcode.com/problems/regular-expression-matching/) |
+| 10 | REGULAR EXPRESSION MATCHING | [LeetCode Problem](https://leetcode.com/problems/regular-expression-matching/) |
 
 ---
 
 ## 💡 **Problem Explanation**
 
-The goal is to implement regular expression matching with support for '.' and '*' where:
+Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` and `'*'` where:
 
-*   '.' Matches any single character.
-*   '\*' Matches zero or more of the preceding element.
+*   `.` Matches any single character.​​​​
+*   `*` Matches zero or more of the preceding element.
 
-The matching should cover the entire input string (not partial).
+The matching should cover the **entire** input string (not partial).
 
-**Examples:**
+**Example 1:**
 
-*   `s = "aa", p = "a"`  → `false` (because "a" doesn't match the entire string "aa")
-*   `s = "aa", p = "a*"` → `true` (because '\*' means zero or more of preceding element, 'a'. Thus, by repeating 'a' once, it becomes "aa".)
-*   `s = "ab", p = ".*"` → `true` (because ".\*" means "zero or more (*) of any character (.)")
+```
+Input: s = "aa", p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
+```
 
----
+**Example 2:**
+
+```
+Input: s = "aa", p = "a*"
+Output: true
+Explanation: '*' means zero or more of the preceding element, 'a'. Therefore, by repeating 'a' once, it becomes "aa".
+```
+
+**Example 3:**
+
+```
+Input: s = "ab", p = ".*"
+Output: true
+Explanation: ".*" means "zero or more (*) of any character (.)".
+```
 
 ## 📊 **Algorithm**
 
-*   Initialize a 2D boolean array `dp` where `dp[i][j]` will store if `s[0...i-1]` matches `p[0...j-1]`.
-*   Base case: `dp[0][0] = true` (empty string matches empty pattern).
-*   Handle patterns starting with `*`.
-*   Iterate through the string `s` and pattern `p`.
-*   If `p[j-1]` is `.` or `s[i-1]`, then `dp[i][j] = dp[i-1][j-1]`.
-*   If `p[j-1]` is `*`:
-    *   If the preceding character of `p` (i.e., `p[j-2]`) does not match the character `s[i-1]`, then `dp[i][j] = dp[i][j-2]` (treat `a*` as empty).
-    *   If the preceding character of `p` (i.e., `p[j-2]`) matches the character `s[i-1]` or is `.`, then `dp[i][j] = dp[i][j-2] || dp[i-1][j]` (treat `a*` as either empty or multiple `a`s).
-*   If `p[j-1]` is neither `.` nor `*` and doesn't match `s[i-1]`, then `dp[i][j] = false`.
-*   Return `dp[s.length][p.length]`.
+*   Create a 2D boolean array `dp` of size `(s.length() + 1) x (p.length() + 1)` to store matching results. `dp[i][j]` will represent whether the first `i` characters of `s` match the first `j` characters of `p`.
+*   Initialize `dp[0][0]` to `true` because an empty string matches an empty pattern.
+*   Handle the case where the pattern starts with `a*`, `b*`, etc.  `dp[0][j] = dp[0][j-2]` if `p[j-1]` is `*`.  This is because `a*` can represent zero occurrences of `a`.
+*   Iterate through the string `s` and pattern `p` using nested loops.
+*   If `p[j-1]` is `.` or `p[j-1]` is equal to `s[i-1]`, then `dp[i][j] = dp[i-1][j-1]`.  This means the current characters match, so the result depends on the previous subproblem.
+*   If `p[j-1]` is `*`, there are two possibilities:
+    *   Zero occurrences: `dp[i][j] = dp[i][j-2]`.  The `*` and the preceding character are ignored.
+    *   One or more occurrences:  `dp[i][j] = dp[i-1][j]` if `p[j-2]` is `.` or `p[j-2]` is equal to `s[i-1]`.  The current character of `s` matches the preceding character of `*`, so we check if the rest of `s` matches `p` up to the `*`.
+*   If none of the above conditions are met, then `dp[i][j] = false`.
+*   Return `dp[s.length()][p.length()]`.
 
 ## 🔥 **Code Implementation**
 
@@ -89,9 +105,13 @@ class Solution {
 }
 ```
 
+## 📊 **ASCII Representation**
+
+N/A
+
 ## 📊 **TABLE Representation**
 
-Let's consider `s = "aab"` and `p = "c*a*b"` to visualize the `dp` table:
+Let's visualize `dp` table for `s = "aab", p = "c*a*b"`
 
 |       |   | c | * | a | * | b |
 | :---- | :-: | :-: | :-: | :-: | :-: | :-: |
@@ -102,31 +122,23 @@ Let's consider `s = "aab"` and `p = "c*a*b"` to visualize the `dp` table:
 
 ## 📊 **WORKING**
 
-Let's trace the `dp` table construction for `s = "aab"` and `p = "c*a*b"`:
+Let's trace the example `s = "aab", p = "c*a*b"`:
 
-1.  **Initialization**:
+1.  **Initialization**: `dp[0][0] = true`. Fill the first row based on the `'*'` character.
+2.  **`i = 1, j = 1`**: `s[0] = 'a', p[0] = 'c'`. No match. `dp[1][1] = false`.
+3.  **`i = 1, j = 2`**: `s[0] = 'a', p[1] = '*'`. `dp[1][2] = dp[1][0] = false`.
+4.  **`i = 1, j = 3`**: `s[0] = 'a', p[2] = 'a'`. Match. `dp[1][3] = dp[0][2] = true`.
+5.  **`i = 1, j = 4`**: `s[0] = 'a', p[3] = '*'`. `dp[1][4] = dp[1][2] = false` or `dp[1][4] = dp[0][4] = true` then `dp[1][4] = true`
+6.  **`i = 1, j = 5`**: `s[0] = 'a', p[4] = 'b'`. No match. `dp[1][5] = false`.
+7.  **`i = 2, j = 1`**: `s[1] = 'a', p[0] = 'c'`. No match. `dp[2][1] = false`.
 
-    *   `dp[0][0] = true` (empty string matches empty pattern)
-    *   `dp[0][2] = true` (c\*)
-    *   `dp[0][4] = true` (c\*a\*)
-2.  **First row `s = "a"`**:
-
-    *   `p = "c"`: `dp[1][1] = false`
-    *   `p = "c*"`: `dp[1][2] = false`
-    *   `p = "c*a"`: `dp[1][3] = true`
-    *   `p = "c*a*"`: `dp[1][4] = true`
-    *   `p = "c*a*b"`: `dp[1][5] = false`
-3.  **Second row `s = "aa"`**:
-
-    *   `p = "c*a*"`: `dp[2][4] = true`
-4.  **Third row `s = "aab"`**:
-
-    *   `p = "c*a*b"`: `dp[3][5] = true`
-
-Therefore the final result is `true`.
+... and so on, until `dp[3][5]` which will be `true`.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** **O(m \* n)**, where `m` is the length of the string `s` and `n` is the length of the pattern `p`, due to the nested loops to fill the `dp` table.
-*   **Space Complexity:** **O(m \* n)**, to store the `dp` table.
+*   **Time Complexity:** **O(m\*n)** where `m` is the length of the string `s` and `n` is the length of the pattern `p`. This is because we iterate through the `dp` table which has dimensions `(m+1) x (n+1)`.
+
+*   **Space Complexity:** **O(m\*n)** because we use a 2D boolean array `dp` of size `(m+1) x (n+1)` to store the matching results.
+
+![Time Complexity Graph](https://i.imgur.com/2yYQnQ3.png)
     
