@@ -13,24 +13,37 @@
 
 ## 💡 **Problem Explanation**
 
-The Merge Intervals problem requires you to merge overlapping intervals in a given list of intervals. Each interval is represented as a pair of numbers, where the first number is the start and the second is the end of the interval.
+The "Merge Intervals" problem requires you to merge overlapping intervals in a given list of intervals.  Each interval is represented as a pair of numbers, where the first number is the start point and the second number is the end point of the interval. The goal is to return a new list of non-overlapping intervals that cover all the intervals in the input.
 
-For example, given the input `[[1,3],[2,6],[8,10],[15,18]]`, the overlapping intervals `[1,3]` and `[2,6]` should be merged into `[1,6]`. The final output should be `[[1,6],[8,10],[15,18]]`.
+For example:
 
-Another example: Input `[[1,4],[4,5]]` should output `[[1,5]]`
+**Input:** `[[1,3],[2,6],[8,10],[15,18]]`
+**Output:** `[[1,6],[8,10],[15,18]]`
+
+Explanation: The intervals `[1,3]` and `[2,6]` overlap, so they are merged into `[1,6]`.
+
+**Input:** `[[1,4],[4,5]]`
+**Output:** `[[1,5]]`
+
+Explanation: The intervals `[1,4]` and `[4,5]` overlap, so they are merged into `[1,5]`.
 
 ## 📊 **Algorithm**
 *   Sort the intervals based on their start times using a priority queue.
-*   Iterate through the sorted intervals.
-*   If the current interval overlaps with the next interval (i.e., `first[1] >= second[0]`), merge them by creating a new interval with the start time of the first interval and the maximum end time of both intervals. Add this merged interval back to the priority queue.
-*   If the current interval does not overlap with the next interval, add the current interval to the result list.
-*   After processing all intervals, convert the result list to an array.
+*   Create an ArrayList to store the merged intervals.
+*   Iterate while the priority queue is not empty.
+*   Poll the first interval from the priority queue.
+*   If the priority queue is not empty, check if the current interval overlaps with the next interval (peeked).
+*   If they overlap, merge them and add the merged interval back into the priority queue.
+*   If they don't overlap, add the current interval to the ArrayList.
+*   If the priority queue is empty, add the current interval to the ArrayList.
+*   Finally, convert the ArrayList to an array and return it.
 
 ## 🔥 **Code Implementation**
 
 ```java
-import java.util.ArrayList;
 import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 class Solution {
     public int[][] merge(int[][] intervals) {
@@ -61,36 +74,29 @@ class Solution {
 }
 ```
 
-## 📊 **WORKING**
+## 📊 **ASCII Representation**
+
+This problem doesn't directly lend itself to a clear ASCII representation, as it mainly involves comparing and merging intervals which is more conceptual.
+
+## 📊 **TABLE Representation**
 
 Let's trace the execution with the input `[[1,3],[2,6],[8,10],[15,18]]`.
 
-1.  **Initialization**:
-
-    *   `intervals = [[1,3],[2,6],[8,10],[15,18]]`
-    *   `pq` (PriorityQueue) is created and populated with the intervals. It automatically sorts intervals based on the starting point
-2.  **Loop execution**:
-    *   `first = [1, 3]` is polled from `pq`. `pq` now contains `[[2,6],[8,10],[15,18]]`
-    *   `second = [2, 6]` is peeked from `pq`.
-    *   Since `first[1] (3) >= second[0] (2)`, the intervals overlap.
-    *   `second` is polled from `pq`. `pq` now contains `[[8,10],[15,18]]`
-    *   A merged interval `[1, Math.max(3, 6)] = [1, 6]` is created and offered to `pq`. `pq` now contains `[[1,6],[8,10],[15,18]]`
-    *   `first = [1,6]` is polled from `pq`. `pq` now contains `[[8,10],[15,18]]`
-    *   `second = [8, 10]` is peeked from `pq`.
-    *   Since `first[1] (6) < second[0] (8)`, the intervals do not overlap.
-    *   `[1,6]` is added to `arrs`. `arrs` now contains `[[1, 6]]`
-    *   `first = [8,10]` is polled from `pq`. `pq` now contains `[[15,18]]`
-    *   `second = [15, 18]` is peeked from `pq`.
-    *   Since `first[1] (10) < second[0] (15)`, the intervals do not overlap.
-    *   `[8,10]` is added to `arrs`. `arrs` now contains `[[1, 6], [8, 10]]`
-    *   `first = [15,18]` is polled from `pq`. `pq` is now empty.
-    *   Since `pq` is empty, `[15,18]` is added to `arrs`. `arrs` now contains `[[1, 6], [8, 10], [15,18]]`
-3.  **Final Result**:
-    *   `arrs` is converted to `[[1, 6], [8, 10], [15, 18]]` and returned.
+| Step | PQ (PriorityQueue)                                            | arrs (ArrayList) | first   | second  | Condition (first[1] >= second[0]) | Action                                                                           |
+|------|--------------------------------------------------------------|------------------|---------|---------|------------------------------------|-----------------------------------------------------------------------------------|
+| 1    | `[[1,3], [2,6], [8,10], [15,18]]` (sorted by start)             | `[]`             |         |         |                                    |                                                                                   |
+| 2    | `[[2,6], [8,10], [15,18]]`                                   | `[]`             | `[1,3]` | `[2,6]` | `3 >= 2` (True)                      | poll second, offer `[1,6]`                                                         |
+| 3    | `[[1,6], [8,10], [15,18]]`                                   | `[]`             |         |         |                                    |                                                                                   |
+| 4    | `[[8,10], [15,18]]`                                        | `[]`             | `[1,6]` | `[8,10]`| `6 >= 8` (False)                     | add `[1,6]` to `arrs`                                                              |
+| 5    | `[[15,18]]`                                                 | `[[1,6]]`        |         |         |                                    |                                                                                   |
+| 6    | `[[15,18]]`                                                 | `[[1,6]]`        | `[8,10]`| `[15,18]`| `10 >= 15` (False)                    | add `[8,10]` to `arrs`                                                             |
+| 7    | `[]`                                                        | `[[1,6], [8,10]]`| `[15,18]`|         |                                    | add `[15,18]` to `arrs`                                                            |
+| 8    | `[]`                                                        | `[[1,6], [8,10], [15,18]]`|         |         |                                    |                                                                                   |
+| 9    |                                                                 |                 |         |         |                                    | return `[[1,6], [8,10], [15,18]]`                                                  |
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity**:  The time complexity is **O(n log n)**, where n is the number of intervals. This is primarily due to the priority queue's sorting of the intervals. Adding each element to the queue requires O(log n) time, and we do this for n elements.
+*   **Time Complexity:** The dominant operation is adding and retrieving elements from the priority queue, which takes **O(log n)** where n is the number of intervals. Since we iterate through all intervals and potentially add/remove them from the queue, the overall time complexity is **O(n log n)**.
 
-*   **Space Complexity**: The space complexity is **O(n)**, where n is the number of intervals. In the worst-case scenario, where no intervals overlap, the priority queue and the array list will store all the intervals.
+*   **Space Complexity:**  The priority queue can potentially hold all intervals in the worst case.  Additionally, the `arrs` ArrayList will, in the worst case (no overlapping intervals), hold all the intervals. Therefore, the space complexity is **O(n)**.
     
