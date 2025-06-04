@@ -13,37 +13,47 @@
 
 ## 💡 **Problem Explanation**
 
-Given the `root` of a binary tree, calculate the vertical order traversal for the binary tree. For each node at position `(row, col)`, its left and right children will be at positions `(row + 1, col - 1)` and `(row + 1, col + 1)` respectively. The root of the tree is at `(0, 0)`.
-
-The vertical order traversal of a binary tree is a list of top-to-bottom orderings for each column index starting from the leftmost column and ending at the rightmost column. There may be multiple nodes in the same row and column. In such a case, sort these nodes by their values.
+The problem asks us to perform a vertical order traversal of a binary tree. Imagine the tree as a 2D plane with the root at (0, 0). We need to report the value of the nodes in each vertical line, sorted from top to bottom. If two nodes are in the same row and column, the order should be from left to right.
 
 **Example:**
 
+**Input:**
+
 ```
-Input: root = [3,9,20,null,null,15,7]
-Output: [[9],[3,15],[20],[7]]
+     3
+    / \
+   9  20
+     /  \
+    15   7
+```
+
+**Output:**
+
+```
+[[9], [3, 15], [20], [7]]
+```
+
 Explanation:
-Column -1: Only node 9 is in this column.
-Column 0: Nodes 3 and 15 are in this column in that order from top to bottom.
-Column 1: Only node 20 is in this column.
-Column 2: Only node 7 is in this column.
-```
+
+*   Column -1: Only node 9.
+*   Column 0: Nodes 3 and 15 (3 is above 15).
+*   Column 1: Only node 20.
+*   Column 2: Only node 7.
 
 ---
 
 ## 📊 **Algorithm**
 
-*   Create a `TreeMap` called `map` to store nodes based on their `(row, col)` coordinates. The `TreeMap` is sorted first by column and then by row, ensuring nodes are processed in the correct order.
-*   Perform a Depth-First Search (DFS) to traverse the binary tree.
-*   In the DFS function, for each node, record its value in the `map` using its `(row, col)` coordinates as the key.
-*   After the DFS traversal, convert the `map` into a `List<List<Integer>>` representing the vertical order traversal.
-*   Use another `TreeMap` `colMap` to structure results per column for final ordering.
+*   We will perform a Depth-First Search (DFS) to traverse the binary tree.
+*   During DFS, we maintain the row and column indices of each node.
+*   We use a `TreeMap` to store nodes based on their column and row indices, ensuring columns are sorted and rows are sorted within each column.
+*   Nodes with the same row and column are stored in an `ArrayList`, which is then sorted before adding to the final result.
+*   Finally, extract the values from the `TreeMap` into a list of lists representing the vertical order traversal.
 
 ## 🔥 **Code Implementation**
 
 ```java
 import java.util.*;
-import javafx.util.Pair; // Import Pair
 
 /**
  * Definition for a binary tree node.
@@ -62,80 +72,110 @@ import javafx.util.Pair; // Import Pair
  */
 class Solution {
     public List<List<Integer>> verticalTraversal(TreeNode root) {
+        // TreeMap to store nodes based on column and row
         TreeMap<Pair<Integer, Integer>, ArrayList<Integer>> map = new TreeMap<>(
                 (a, b) -> {
-                    if (!a.getKey().equals(b.getKey()))
-                        return a.getKey() - b.getKey();
+                    if (!a.getValue().equals(b.getValue()))
+                        return a.getValue() - b.getValue(); // Compare by column
                     else
-                        return a.getValue() - b.getValue();
+                        return a.getKey() - b.getKey(); // Compare by row
                 });
-        dfs(root, 0, 0, map);
-        List<List<Integer>> res = new ArrayList<>();
-        Map<Integer, List<Integer>> colMap = new TreeMap<>();
+        dfs(root, 0, 0, map); // Start DFS
 
+        List<List<Integer>> res = new ArrayList<>();
+        Map<Integer, List<Integer>> colMap = new TreeMap<>(); // Map to group nodes by column
+
+        // Iterate through the TreeMap to build the result
         for (Map.Entry<Pair<Integer, Integer>, ArrayList<Integer>> entry : map.entrySet()) {
             Pair<Integer, Integer> key = entry.getKey();
             int col = key.getValue();
             ArrayList<Integer> vals = entry.getValue();
-            Collections.sort(vals);
+            Collections.sort(vals); // Sort nodes with the same row and column
 
             colMap.putIfAbsent(col, new ArrayList<>());
-            colMap.get(col).addAll(vals);
+            colMap.get(col).addAll(vals); // Add values to the corresponding column list
         }
 
-        res.addAll(colMap.values());
+        res.addAll(colMap.values()); // Add column lists to the result
         return res;
     }
 
+    // Depth-First Search to traverse the tree
     private void dfs(TreeNode node, int row, int col, TreeMap<Pair<Integer, Integer>, ArrayList<Integer>> map) {
         if (node == null)
             return;
-        Pair<Integer, Integer> key = new Pair<>(col, row);
+        Pair<Integer, Integer> key = new Pair<>(row, col); // Create a pair for (row, col)
         map.putIfAbsent(key, new ArrayList<>());
-        map.get(key).add(node.val);
+        map.get(key).add(node.val); // Add the node value to the corresponding list
 
-        dfs(node.left, row + 1, col - 1, map);
-        dfs(node.right, row + 1, col + 1, map);
+        dfs(node.left, row + 1, col - 1, map); // Traverse left subtree
+        dfs(node.right, row + 1, col + 1, map); // Traverse right subtree
     }
 }
 ```
 
 ## 📊 **ASCII Representation**
 
-Consider the following binary tree:
-
-```
-      3
-     / \
-    9   20
-       /  \
-      15   7
-```
-
-## 📊 **TABLE Representation**
-
-N/A
-
-## 📊 **WORKING**
-
-Let's trace the execution with the example binary tree:
+Let's visualize the tree from the example:
 
 ```
       3 (0,0)
      / \
-    9   20
-   (-1,1)/  \ (1,1)
-      15   7
-     (0,2)/  \ (2,2)
+   9 (-1,1) 20 (1,1)
+     /  \
+ 15 (0,2) 7 (2,2)
 ```
 
-1.  The `dfs` function is called recursively to traverse the tree.
-2.  Nodes are placed in a Treemap with keys as `Pair<Integer, Integer>`, (col, row).  Each entry contains list of node values.
-3.  The treemap sorts the results based on column index. For nodes in the same column, they are sorted by row index.  If nodes share same col and row, their values are sorted.
-4.  The treemap is traversed and the result is stored column-wise.
+The (col, row) coordinates are shown next to each node.
+
+## 📊 **TABLE Representation**
+
+Not applicable for this problem.
+
+## 📊 **WORKING**
+
+Let's trace the execution with the sample input:
+
+```
+     3
+    / \
+   9  20
+     /  \
+    15   7
+```
+
+1.  **DFS(3, 0, 0)**: `map` gets (0, 0) -> \[3]
+2.  **DFS(9, 1, -1)**: `map` gets (-1, 1) -> \[9]
+3.  **DFS(20, 1, 1)**: `map` gets (1, 1) -> \[20]
+4.  **DFS(15, 2, 0)**: `map` gets (0, 2) -> \[15]
+5.  **DFS(7, 2, 2)**: `map` gets (2, 2) -> \[7]
+
+After DFS, the `map` looks like:
+
+```
+{
+  (-1, 1) -> [9],
+  (0, 0) -> [3],
+  (0, 2) -> [15],
+  (1, 1) -> [20],
+  (2, 2) -> [7]
+}
+```
+
+Finally, we group by columns:
+
+```
+Column -1: [9]
+Column 0: [3, 15]
+Column 1: [20]
+Column 2: [7]
+```
+
+Result: `[[9], [3, 15], [20], [7]]`
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity**: The time complexity is **O(N log N)**, where N is the number of nodes in the binary tree. The DFS traversal visits each node once (O(N)). The `TreeMap` operations (insertion and retrieval) take O(log N) time, and sorting the node values in each column takes O(K log K) where K is the number of nodes in that column.
-*   **Space Complexity**: The space complexity is **O(N)**, where N is the number of nodes in the binary tree. This is due to the space used by the `TreeMap` to store the nodes and the recursion stack during the DFS traversal.
+*   **Time Complexity:** The time complexity is dominated by the DFS traversal of the tree, which takes O(N) time, where N is the number of nodes in the tree.  Sorting the nodes at the same position take O(klogk) where k is the number of such nodes.  Hence O(Nlogk)
+
+*   **Space Complexity:** The space complexity is primarily determined by the `TreeMap`. In the worst case, the `TreeMap` can store all N nodes of the tree. Also recursion stack will take O(H) space, where H is height of the tree. Therefore, the space complexity is **O(N)**.
     
