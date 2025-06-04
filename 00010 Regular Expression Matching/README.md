@@ -13,12 +13,12 @@
 
 ## 💡 **Problem Explanation**
 
-The "Regular Expression Matching" problem asks whether a given string `s` matches a regular expression pattern `p`. The regular expression supports two special characters:
+The "Regular Expression Matching" problem asks you to implement regular expression matching with support for '.' and '*' where:
 
-*   `.` Matches any single character.
-*   `*` Matches zero or more occurrences of the preceding element.
+*   '.' Matches any single character.
+*   '\*' Matches zero or more of the preceding element.
 
-The matching should cover the entire input string `s` (not partial).
+The matching should cover the **entire** input string (not partial).
 
 **Example 1:**
 
@@ -46,21 +46,16 @@ Explanation: ".*" means "zero or more (*) of any character (.)".
 
 ## 📊 **Algorithm**
 
-Here's the algorithm we'll use:
-
-*   Initialize a 2D boolean array `dp` where `dp[i][j]` represents whether the first `i` characters of the string `s` match the first `j` characters of the pattern `p`.
-
-*   The first row and column of `dp` are initialized based on the conditions where either the string or the pattern is empty.
-
-*   Iterate through the `dp` array, filling it based on the following rules:
-
-    *   If `p[j-1]` is `.` or `s[i-1]`, then `dp[i][j] = dp[i-1][j-1]`.
-    *   If `p[j-1]` is `*`:
-        *   If the character before `*` doesn't match `s[i-1]`, then `dp[i][j] = dp[i][j-2]` (zero occurrences).
-        *   Otherwise, `dp[i][j] = dp[i][j-2]` (zero occurrences) or `dp[i-1][j]` (one or more occurrences).
-    *   If none of the above, `dp[i][j] = false`.
-
-*   The final result is stored in `dp[s.length()][p.length()]`.
+*   Create a 2D boolean array `dp` of size `(s.length() + 1) x (p.length() + 1)` to store the matching results. `dp[i][j]` represents whether the first `i` characters of `s` match the first `j` characters of `p`.
+*   Initialize `dp[0][0]` to `true` because an empty string matches an empty pattern.
+*   Handle the case where `p` starts with `a*`, `b*`, `c*`... by initializing the first row of `dp`.  If `p[j-1]` is `*`, then `dp[0][j] = dp[0][j-2]` which means zero occurrences of the preceding character.
+*   Iterate through the `dp` array starting from index `(1, 1)`.
+    *   If `p[j-1]` is `.` or `p[j-1]` is equal to `s[i-1]`, then `dp[i][j] = dp[i-1][j-1]` because the current characters match, so the result depends on whether the previous characters matched.
+    *   If `p[j-1]` is `*`, then there are two possibilities:
+        *   Zero occurrences of the preceding character: `dp[i][j] = dp[i][j-2]`
+        *   One or more occurrences of the preceding character: If `p[j-2]` is `.` or `p[j-2]` is equal to `s[i-1]`, then `dp[i][j] = dp[i][j] || dp[i-1][j]`
+    *   If `p[j-1]` is neither `.`, `*`, nor equal to `s[i-1]`, then `dp[i][j] = false`.
+*   Return `dp[s.length()][p.length()]`, which represents whether the entire string `s` matches the entire pattern `p`.
 
 ## 🔥 **Code Implementation**
 
@@ -112,62 +107,51 @@ class Solution {
 
 ## 📊 **ASCII Representation**
 
-Let's consider `s = "aab"` and `p = "c*a*b"`
-
-The `dp` array can be visualized as follows:
-
+Let's consider the input `s = "aab"` and `p = "c*a*b"` to visualize the DP table.
 ```
-      ""  c   *   a   *   b
-""  T   F   T   F   T   F
-a   F   F   F   T   T   F
-a   F   F   F   F   T   F
-b   F   F   F   F   F   T
-
+      |   | c | * | a | * | b |
+    --+---+---+---+---+---+---+
+    ""| T | F | T | F | T | F |
+    a | F | F | F | T | T | F |
+    a | F | F | F | F | T | F |
+    b | F | F | F | F | F | T |
 ```
 
 ## 📊 **WORKING**
 
-Let's trace the execution for `s = "aab"` and `p = "c*a*b"`:
+Let's trace the execution with `s = "aab"` and `p = "c*a*b"`:
 
-1.  **Initialization**: `dp[0][0] = true`.  Since `p[1]` is `*`, then `dp[0][2] = dp[0][0]` which is `true`. Since `p[3]` is `*`, then `dp[0][4] = dp[0][2]` which is `true`.
+1.  **Initialization:** `dp[0][0] = true`. The first row is initialized based on the pattern `p`. Since `p = "c*a*b"`,  `dp[0][2]`, and `dp[0][4]` will be true.  This indicates that an empty string `""` can match `"c*"` and `"c*a*"`.
 
-2.  **Iteration**:
+2.  **Iteration:** We populate the `dp` table based on the matching rules:
 
-    *   For `i = 1`, `j = 1`: `s[0] = 'a'`, `p[0] = 'c'`. No match, `dp[1][1] = false`.
+    *   `s[0] = 'a'`, `p[0] = 'c'`:  `dp[1][1] = false`
 
-    *   For `i = 1`, `j = 2`: `s[0] = 'a'`, `p[1] = '*'`.  `p[0] = 'c'` and `s[0] = 'a'` which do not match. So, `dp[1][2] = dp[1][0] = false`.
+    *   `s[0] = 'a'`, `p[1] = '*'`: `dp[1][2] = dp[1][0] = false` (zero occurence of c)  OR `dp[1][2] = dp[0][2] = true`, so then `dp[1][2] = false`
 
-    *   For `i = 1`, `j = 3`: `s[0] = 'a'`, `p[2] = 'a'`. Match, `dp[1][3] = dp[0][2] = true`.
+    *   `s[0] = 'a'`, `p[2] = 'a'`:  `dp[1][3] = dp[0][2] = false`
 
-    *   For `i = 1`, `j = 4`: `s[0] = 'a'`, `p[3] = '*'`. `p[2] = 'a'` and `s[0] = 'a'` match.  So, `dp[1][4] = dp[1][2] || dp[0][4] = false || true = true`.
+    *   `s[0] = 'a'`, `p[3] = '*'`:  `dp[1][4] = dp[1][2] = false` (zero occurence of a)  OR `dp[1][4] = dp[0][4] = false`, then  `dp[1][4] = true`
 
-    *   For `i = 1`, `j = 5`: `s[0] = 'a'`, `p[4] = 'b'`. No match, `dp[1][5] = false`.
+    *   `s[0] = 'a'`, `p[4] = 'b'`:  `dp[1][5] = false`
 
-    *   For `i = 2`, `j = 1`: `s[1] = 'a'`, `p[0] = 'c'`. No match, `dp[2][1] = false`.
+    *   `s[1] = 'a'`, `p[0] = 'c'`: `dp[2][1] = false`
+    *   `s[1] = 'a'`, `p[1] = '*'`: `dp[2][2] = false`
+    *   `s[1] = 'a'`, `p[2] = 'a'`:  `dp[2][3] = dp[1][2] = false`
+    *   `s[1] = 'a'`, `p[3] = '*'`: `dp[2][4] = true`
+    *   `s[1] = 'a'`, `p[4] = 'b'`: `dp[2][5] = false`
 
-    *   For `i = 2`, `j = 2`: `s[1] = 'a'`, `p[1] = '*'`. `p[0] = 'c'` and `s[1] = 'a'` which do not match.  So, `dp[2][2] = dp[2][0] = false`.
+    *   `s[2] = 'b'`, `p[0] = 'c'`: `dp[3][1] = false`
+    *   `s[2] = 'b'`, `p[1] = '*'`: `dp[3][2] = false`
+    *   `s[2] = 'b'`, `p[2] = 'a'`:  `dp[3][3] = dp[2][2] = false`
+    *   `s[2] = 'b'`, `p[3] = '*'`: `dp[3][4] = false`
+    *   `s[2] = 'b'`, `p[4] = 'b'`:  `dp[3][5] = dp[2][4] = true`
 
-    *   For `i = 2`, `j = 3`: `s[1] = 'a'`, `p[2] = 'a'`. Match, `dp[2][3] = dp[1][2] = false`.
-
-    *   For `i = 2`, `j = 4`: `s[1] = 'a'`, `p[3] = '*'`. `p[2] = 'a'` and `s[1] = 'a'` match.  So, `dp[2][4] = dp[2][2] || dp[1][4] = false || true = true`.
-
-    *   For `i = 2`, `j = 5`: `s[1] = 'a'`, `p[4] = 'b'`. No match, `dp[2][5] = false`.
-
-    *   For `i = 3`, `j = 1`: `s[2] = 'b'`, `p[0] = 'c'`. No match, `dp[3][1] = false`.
-
-    *   For `i = 3`, `j = 2`: `s[2] = 'b'`, `p[1] = '*'`. `p[0] = 'c'` and `s[2] = 'b'` which do not match.  So, `dp[3][2] = dp[3][0] = false`.
-
-    *   For `i = 3`, `j = 3`: `s[2] = 'b'`, `p[2] = 'a'`. No match, `dp[3][3] = false`.
-
-    *   For `i = 3`, `j = 4`: `s[2] = 'b'`, `p[3] = '*'`. `p[2] = 'a'` and `s[2] = 'b'` which do not match.  So, `dp[3][4] = dp[3][2] = false`.
-
-    *   For `i = 3`, `j = 5`: `s[2] = 'b'`, `p[4] = 'b'`. Match, `dp[3][5] = dp[2][4] = true`.
-
-3.  **Result**: `dp[3][5] = true`.
+3.  **Result:**  Finally, `dp[3][5]` which is `true`, which means `"aab"` matches `"c*a*b"`.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** O(m\*n), where `m` is the length of the string `s` and `n` is the length of the pattern `p`, due to the nested loops in the dynamic programming approach.
+*   **Time Complexity:** **O(m \* n)**, where `m` is the length of the string `s` and `n` is the length of the pattern `p`. This is because we iterate through each cell of the `dp` array once.
 
-*   **Space Complexity:** O(m\*n) for the `dp` array.
+*   **Space Complexity:** **O(m \* n)**, as we use a 2D boolean array `dp` of size `(m + 1) x (n + 1)` to store the matching results.
     
