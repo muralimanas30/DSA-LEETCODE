@@ -1,40 +1,122 @@
 # 00207 - Course Schedule
-    
+
 **Language:** Java  
 **Runtime:** 6 ms (Beats 73.92% of users)  
 **Memory:** 45.2 MB (Beats 70.23% of users)  
 
-## 📝 **LeetCode Problem**
-| 🔢 Problem Number | 📌 Title | 🔗 Link |
-|------------------|--------------------------|--------------------------|
-| 207 | COURSE SCHEDULE | [LeetCode Problem](https://leetcode.com/problems/course-schedule/) |
+---
+
+## 📝 Problem Statement
+
+Given `numCourses` (numbered from `0` to `numCourses - 1`) and a list of prerequisite pairs `prerequisites`, determine if it is possible to finish all courses. Each prerequisite pair `[a, b]` means you must take course `b` before course `a`. The task is to check if the course dependency graph contains a cycle.
+
+**Example 1:**  
+- Input: `numCourses = 2`, `prerequisites = [[1,0],[0,1]]`  
+- Output: `false`  
+- Explanation: There is a cycle (0 → 1 → 0), so it's impossible to finish all courses.
+
+**Example 2:**  
+- Input: `numCourses = 2`, `prerequisites = [[0,1]]`  
+- Output: `true`  
+- Explanation: You can take course 1, then course 0.
 
 ---
 
-## 💡 **Problem Explanation**
+## 💡 Approach Overview
 
-The "Course Schedule" problem asks us to determine if it is possible to finish all courses you must take, given `numCourses` (the total number of courses, labeled from `0` to `numCourses-1`) and an array `prerequisites` where each `prerequisites[i] = [ai, bi]` indicates that you must take course `bi` first if you want to take course `ai`. Essentially, we need to check if there is a cycle in the course dependency graph.  If there's a cycle, it's impossible to finish all courses.
+This problem is a classic application of **cycle detection in a directed graph**. If the dependency graph has a cycle, not all courses can be completed. We use **Kahn's Algorithm** (BFS-based topological sort) to detect cycles.
 
-**Example:**
+---
 
-*   **Input:** `numCourses = 2`, `prerequisites = [[1,0],[0,1]]`
-*   **Output:** `false` (There's a cycle: 1 -> 0 -> 1)
+## 🧩 Variable & Data Structure Explanation
 
-*   **Input:** `numCourses = 2`, `prerequisites = [[0,1]]`
-*   **Output:** `true` (You can take course 1 first, then course 0)
+| Variable      | Type                               | Description                                                                 |
+|---------------|------------------------------------|-----------------------------------------------------------------------------|
+| `numCourses`  | `int`                             | Total number of courses                                                     |
+| `prerequisites` | `int[][]`                       | List of prerequisite pairs `[a, b]`                                         |
+| `graph`       | `ArrayList<ArrayList<Integer>>`    | Adjacency list: `graph.get(i)` lists courses that depend on course `i`      |
+| `indegree`    | `int[]`                           | `indegree[i]` is the number of prerequisites for course `i`                 |
+| `q`           | `Queue<Integer>`                  | Queue for BFS traversal (courses with no remaining prerequisites)           |
+| `added`       | `int`                             | Number of courses left to process (should be 0 if all can be finished)      |
 
-## 📊 **Algorithm**
+---
 
-*   Build an adjacency list representation of the course dependencies (graph).
-*   Calculate the in-degree of each course (number of prerequisites).
-*   Add all courses with an in-degree of 0 to a queue (these are courses we can start with).
-*   While the queue is not empty:
-    *   Remove a course from the queue.
-    *   Decrement the in-degree of all its neighbors (courses that depend on this course).
-    *   If any neighbor's in-degree becomes 0, add it to the queue.
-*   If the number of courses we were able to take (courses added to the queue) equals `numCourses`, then it's possible to finish all courses. Otherwise, there's a cycle, and it's not possible.
+## 📊 Algorithm Steps
 
-## 🔥 **Code Implementation**
+1. **Build the Graph:**
+   - Initialize an adjacency list `graph` for all courses.
+   - For each prerequisite pair `[a, b]`, add an edge from `b` to `a` and increment `indegree[a]`.
+
+2. **Initialize the Queue:**
+   - Add all courses with `indegree == 0` (no prerequisites) to the queue.
+
+3. **Process Courses (BFS):**
+   - While the queue is not empty:
+     - Remove a course from the queue.
+     - For each neighbor (dependent course), decrement its `indegree`.
+     - If a neighbor's `indegree` becomes 0, add it to the queue.
+
+4. **Check for Cycles:**
+   - If all courses are processed (`added == 0`), return `true`.
+   - If not, a cycle exists; return `false`.
+
+---
+
+## 📈 Visual Diagram
+
+### Example: `numCourses = 4`, `prerequisites = [[1,0],[2,0],[3,1],[3,2]]`
+
+**Dependency Graph:**
+
+```
+    0
+   / \
+  1   2
+   \ /
+    3
+```
+
+- Course 0 is a prerequisite for 1 and 2.
+- Courses 1 and 2 are prerequisites for 3.
+
+**Adjacency List:**
+| Course | Neighbors   |
+|--------|-------------|
+| 0      | 1, 2        |
+| 1      | 3           |
+| 2      | 3           |
+| 3      |             |
+
+**In-degree Array:**
+| Course | In-degree   |
+|--------|-------------|
+| 0      | 0           |
+| 1      | 1           |
+| 2      | 1           |
+| 3      | 2           |
+
+---
+
+## 🧮 Step-by-Step Execution
+
+1. **Initialization:**
+   - `graph = [[1,2], [3], [3], []]`
+   - `indegree = [0,1,1,2]`
+   - `q = [0]` (only course 0 has no prerequisites)
+   - `added = 4`
+
+2. **Processing:**
+   - Pop 0: add 1 and 2 to queue (`indegree[1] = 0`, `indegree[2] = 0`), `added = 2`
+   - Pop 1: decrement `indegree[3]` to 1
+   - Pop 2: decrement `indegree[3]` to 0, add 3 to queue, `added = 1`
+   - Pop 3: no neighbors, `added = 0`
+
+3. **Result:**
+   - All courses processed (`added == 0`), so return `true`.
+
+---
+
+## 🔥 Code Implementation
 
 ```java
 import java.util.ArrayList;
@@ -73,58 +155,18 @@ class Solution {
 }
 ```
 
-## 📊 **ASCII Representation**
+---
 
-N/A - This problem is best visualized as a directed graph rather than a grid.
+## 🚀 Complexity Analysis
 
-## 📊 **TABLE Representation**
+- **Time Complexity:** O(V + E), where V = number of courses, E = number of prerequisite pairs.
+- **Space Complexity:** O(V + E) for the adjacency list, in-degree array, and queue.
 
-Consider the input `numCourses = 4`, `prerequisites = [[1,0],[2,0],[3,1],[3,2]]`
+---
 
-| Course | Prerequisites | In-degree |
-|---|---|---|
-| 0 | - | 0 |
-| 1 | 0 | 1 |
-| 2 | 0 | 1 |
-| 3 | 1, 2 | 2 |
+## 📚 References
 
-## 📊 **WORKING**
+- [Kahn's Algorithm - Topological Sorting](https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm)
+- [LeetCode Problem 207 - Course Schedule](https://leetcode.com/problems/course-schedule/)
 
-Let's trace the execution with the example: `numCourses = 4`, `prerequisites = [[1,0],[2,0],[3,1],[3,2]]`
-
-1.  **Build Graph and In-degree:**
-
-    *   `graph`:
-        *   0: \[1, 2]
-        *   1: \[3]
-        *   2: \[3]
-        *   3: \[ ]
-    *   `indegree`: \[0, 1, 1, 2]
-2.  **Initialize Queue:** `q = [0]` (course 0 has in-degree 0)
-3.  **Process Queue:**
-    *   `destNode = 0`
-    *   Neighbors of 0 are 1 and 2.
-    *   `indegree[1]` becomes 0, `q.add(1)`
-    *   `indegree[2]` becomes 0, `q.add(2)`
-    *   `q = [1, 2]`
-    *   `destNode = 1`
-    *   Neighbor of 1 is 3.
-    *   `indegree[3]` becomes 1
-    *   `q = [2]`
-    *   `destNode = 2`
-    *   Neighbor of 2 is 3
-    *   `indegree[3]` becomes 0
-    *   `q.add(3)`
-    *   `q = [3]`
-    *   `destNode = 3`
-    *   3 has no neighbors.
-    *   `q = []`
-4.  `added = 0` (since the loop will iterate 4 times and initial value is 4)
-
-Since `added == 0`, we return `true`.  All courses can be finished.
-
-## 🚀 **Time & Space Complexity**
-
-*   **Time Complexity:** **O(V + E)**, where V is the number of courses (`numCourses`) and E is the number of dependencies (`prerequisites.length`). We traverse all courses and dependencies to build the graph and process the queue.
-*   **Space Complexity:** **O(V + E)**. We use an adjacency list to represent the graph, which takes O(V + E) space, and an in-degree array of size V, taking O(V) space. The queue can, in the worst case, contain all courses, taking O(V) space.
-    
+---
