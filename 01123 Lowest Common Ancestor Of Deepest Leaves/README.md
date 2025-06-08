@@ -13,12 +13,16 @@
 
 ## 💡 **Problem Explanation**
 
-Given the `root` of a binary tree, return the lowest common ancestor of its deepest leaves. Recall that:
+Given the `root` of a binary tree, return the lowest common ancestor of its deepest leaves.
 
-*   A node is a *leaf* if it has no children.
-*   The *depth* of the root is 0, and if the depth of a node is `d`, the depth of each of its children is `d + 1`.
-*   The *deepest leaves* of a tree are the leaves that have the maximum depth.
-*   The *lowest common ancestor* of a set `S` of nodes is the node `A` with the largest depth such that every node in `S` is in the subtree rooted at `A`.
+Recall that:
+
+*   Each node of a Binary Tree has a value.
+*   The depth of each node is the shortest distance to the root.
+*   The deepest nodes are all the nodes that have the largest depth.
+*   A node is an ancestor of itself and all of its descendants.
+
+The lowest common ancestor of two nodes `a` and `b` is the node `c` with the largest depth such that `a` and `b` are descendants of `c`.
 
 **Example:**
 
@@ -34,19 +38,22 @@ Consider the following binary tree:
   7   4
 ```
 
-The deepest leaves are `7` and `4` (depth 3). The lowest common ancestor of `7` and `4` is `2`.  Therefore, the output should be the node `2`.
+The deepest leaves are `7`, `4`, `0`, and `8`. The lowest common ancestor of these nodes is `2`, `7`, `4` -> `2` then `5`, `0`, `8` -> `1` then `3` which is 3.
+
+**Input:** `root = [3,5,1,6,2,0,8,null,null,7,4]`
+**Output:** `[2,7,4]`
 
 ---
 
 ## 📊 **Algorithm**
-
-*   Calculate the maximum depth of the tree.
-*   Recursively traverse the tree to find the lowest common ancestor of the deepest leaves.
-*   If the current node's depth is equal to the maximum depth, it is a deepest leaf, so return the node.
-*   Recursively find the LCA in the left and right subtrees.
-*   If both left and right subtrees return a node, the current node is the LCA.
-*   If only one subtree returns a node, return that node.
+*   Calculate the maximum depth of the tree using a recursive function `treeDepth`.
+*   Implement a recursive function `findAncestors` that searches for the lowest common ancestor.
+*   If the current node's depth equals the maximum depth or the node is null, return the node.
+*   Recursively call `findAncestors` for the left and right subtrees, incrementing the depth.
+*   If both left and right subtrees return a non-null node, the current node is the LCA.
+*   If only one subtree returns a non-null node, return that node.
 *   If both subtrees return null, return null.
+---
 
 ## 🔥 **Code Implementation**
 
@@ -94,56 +101,59 @@ class Solution {
 
 ## 📊 **ASCII Representation**
 
-Consider the following tree for better visualization.
+Consider the example tree:
 
 ```
-        3
-       / \
-      5   1
-     / \ / \
-    6  2 0  8
-   / \
-  7   4
+      3
+     / \
+    5   1
+   / \ / \
+  6  2 0  8
+ / \
+7   4
 ```
 
 ## 📊 **WORKING**
 
 Let's trace the execution with the example tree:
 
-```
-        3
-       / \
-      5   1
-     / \ / \
-    6  2 0  8
-   / \
-  7   4
-```
+1.  `treeDepth(root)` returns 4 (depth of the deepest leaves).
 
-1.  `treeDepth(root)` returns 4.
 2.  `lcaDeepestLeaves(root)` calls `findAncestors(root, 1, 4)`.
+
 3.  `findAncestors(3, 1, 4)`:
     *   `left = findAncestors(5, 2, 4)`
-    *   `findAncestors(5, 2, 4)`:
-        *   `left = findAncestors(6, 3, 4)`
-        *   `findAncestors(6, 3, 4)`:
-            *   `left = findAncestors(7, 4, 4)` returns `7`
-            *   `right = findAncestors(4, 4, 4)` returns `4`
-            *   Since depth is the maximum depth of 4, return `7` and `4`
-            *  since both not null return 6
-        *   `right = findAncestors(2, 3, 4)`
-        *   `findAncestors(2, 3, 4)`:
-            returns 2
-        *  since both not null return 5
     *   `right = findAncestors(1, 2, 4)`
-        *   `findAncestors(1, 2, 4)`:
-            * return 1
-    * since both not null return 3
 
-So, the LCA of the deepest leaves (7 and 4) is 2.
+4.  `findAncestors(5, 2, 4)`:
+    *   `left = findAncestors(6, 3, 4)`
+    *   `right = findAncestors(2, 3, 4)`
+
+5.  `findAncestors(6, 3, 4)`:
+    *   `left = findAncestors(7, 4, 4)` returns 7
+    *   `right = findAncestors(4, 4, 4)` returns 4
+    *   Since both are not null `findAncestors(2,3,4)` return 2
+
+6.  `findAncestors(5,2,4)`:
+    *   left is non null
+    *   right is non null
+    *   `findAncestors(5,2,4)` return 5
+
+7.  `findAncestors(1, 2, 4)`:
+    *   `left = findAncestors(0, 3, 4)` returns 0
+    *   `right = findAncestors(8, 3, 4)` returns 8
+    *   return 1
+
+8.  `findAncestors(3,1,4)`:
+    *   left is non null
+    *   right is non null
+    *   `findAncestors(3,1,4)` returns 3
+
+Thus, the LCA of the deepest leaves is 3.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** O(N), where N is the number of nodes in the binary tree. The `treeDepth` function visits each node once to determine the maximum depth. The `findAncestors` function also visits each node once in the worst case.
-*   **Space Complexity:** O(H), where H is the height of the binary tree. This is due to the recursive call stack. In the worst case, H can be equal to N (for a skewed tree), and in the best case, H can be equal to log(N) (for a balanced tree).
+*   **Time Complexity:** O(N), where N is the number of nodes in the binary tree.  The `treeDepth` function visits each node once.  The `findAncestors` function also visits each node at most once.
+
+*   **Space Complexity:** O(H), where H is the height of the tree, due to the recursive call stack. In the worst case (skewed tree), H can be equal to N, resulting in O(N) space complexity. In the best case (balanced tree), H would be log(N), leading to O(log N) space complexity.
     
