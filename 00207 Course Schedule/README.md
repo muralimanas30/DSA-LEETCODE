@@ -154,6 +154,79 @@ class Solution {
     }
 }
 ```
+---
+
+## 🧭 Programming Workflow
+
+The following outlines the logical flow of the Java implementation:
+
+1. **Graph and Indegree Initialization**
+   - Create an adjacency list `graph` to represent course dependencies.
+   - Initialize an `indegree` array to count prerequisites for each course.
+
+2. **Build the Graph**
+   - For each prerequisite pair `[a, b]`:
+     - Add an edge from course `u` to course `v` (`graph.get(u).add(v)`).
+     - Increment `indegree[v]` to reflect the new prerequisite.
+
+3. **Queue Initialization**
+   - Add all courses with `indegree == 0` (no prerequisites) to the BFS queue.
+   - Decrement `added` for each course added to the queue.
+
+4. **Breadth-First Search (BFS) Traversal**
+   - While the queue is not empty:
+     - Remove a course (`destNode`) from the queue.
+     - For each neighbor (dependent course) of `destNode`:
+       - Decrement its `indegree`.
+       - If `indegree` becomes 0, add it to the queue and decrement `added`.
+
+5. **Cycle Detection and Result**
+   - After BFS, if `added == 0`, all courses have been processed (no cycle): return `true`.
+   - If `added > 0`, a cycle exists: return `false`.
+
+---
+
+## 🗂️ Programming Flowchart
+
+Below is a simple flowchart representing the main logic:
+
+```
++-----------------------------+
+|  Initialize graph & indegree|
++-------------+---------------+
+              |
+              v
++-----------------------------+
+|  Build graph & fill indegree|
++-------------+---------------+
+              |
+              v
++-----------------------------+
+|  Add courses with           |
+|  indegree == 0 to queue     |
++-------------+---------------+
+              |
+              v
++-----------------------------+
+|  While queue not empty:     |
+|    - Pop course             |
+|    - For each neighbor:     |
+|        - Decrement indegree |
+|        - If indegree==0,    |
+|          add to queue       |
+|        - Decrement added    |
++-------------+---------------+
+              |
+              v
++-----------------------------+
+|  If added == 0:             |
+|    return true              |
+|  else:                      |
+|    return false             |
++-----------------------------+
+```
+
+This workflow ensures that all courses can be completed only if there are no cycles in the dependency graph.
 
 ---
 
