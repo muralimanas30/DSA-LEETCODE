@@ -6,29 +6,40 @@
 
 ## 💡 **Problem Explanation**
 
-The problem requires generating a list of numbers from 1 to `n` in lexicographical order. Lexicographical order is similar to alphabetical order but applied to numbers. For example, `1, 10, 11, 12, ..., 19, 2, 20, 21, ...` is the lexicographical order for numbers starting from 1.
+The "Lexicographical Numbers" problem asks us to generate a list of numbers from 1 to `n` in lexicographical (dictionary) order. This means we should order the numbers as if they were strings.  For instance, 1 comes before 10, which comes before 11, and so on.
 
 **Example:**
 
 *   **Input:** `n = 13`
 *   **Output:** `[1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9]`
 
-**Example:**
+**Explanation of the Output:**
 
-*   **Input:** `n = 2`
-*   **Output:** `[1, 2]`
+We generate numbers in the following order:
 
-## 💡 Algorithm
+1.  Start with 1.
+2.  Append digits to 1 to get 10, 11, 12, 13.
+3.  Move to the next single-digit number 2, then 3, and so on, up to 9.
 
-*   Initialize an empty list to store the results.
-*   Iterate from 1 to `n`.
-*   For each number `i` from 1 to `n`, perform a Depth-First Search (DFS) to generate lexicographically ordered numbers starting with `i`.
-*   In the DFS function:
-    *   Add the current number to the result list.
-    *   For each digit from 0 to 9, calculate the next number by appending the digit to the current number.
-    *   If the next number is within the limit `n`, recursively call DFS with the next number.
-    *   If the next number exceeds the limit, break the loop as further numbers will also exceed the limit.
-*   Return the result list.
+## 📊 **Algorithm**
+
+Here's a breakdown of the algorithm used in the code:
+
+*   **DFS (Depth-First Search) Approach (Method 1):**
+
+    1.  **Initialization:** Create an empty list `res` to store the lexicographically sorted numbers.
+    2.  **Iteration:** Iterate from `i = 1` to `n`.  For each `i`, initiate a depth-first search starting with `i`.
+    3.  **DFS Function (`dfs`)**:
+        *   **Base Case:** If the current number `number` is greater than the limit `n` or the list size is equals to limit then return.
+        *   **Add to Result:** Add the current number `number` to the result list `res`.
+        *   **Recursive Step:** Iterate through digits 0 to 9 (`nextDigit`).
+            *   Calculate the next potential number: `nextNum = number * 10 + nextDigit`.
+            *   If `nextNum` is within the limit `n`, recursively call `dfs` with `nextNum`.
+            *   If `nextNum` exceeds the limit `n`, stop exploring further digits (optimization).
+*   **Sorting Approach (Method 2):**
+    1.  Convert each number from 1 to n to a string and store in string array.
+    2.  Sort the string array.
+    3.  Convert the string array to integer array and return.
 
 ## 🔥 **Code Implementation**
 
@@ -70,8 +81,50 @@ class Solution {
 */
 ```
 
+## 📊 **ASCII Representation**
+
+(Not applicable, as this problem doesn't directly involve grids or trees.)
+
+## 📊 **TABLE Representation**
+
+(Not applicable, as this problem doesn't directly involve DP or array traversals in a way that benefits from tabular representation.)
+
+## 📊 **WORKING**
+
+Let's trace the execution for `n = 13` using the DFS method (Method 1):
+
+1.  **Initial call:** `lexicalOrder(13)`
+2.  **Loop (i = 1):** `dfs(1, 13, [])`
+    *   `res.add(1)`  `res` is now `[1]`
+    *   Loop (nextDigit = 0): `dfs(10, 13, [1])`
+        *   `res.add(10)` `res` is now `[1, 10]`
+        *   Loop (nextDigit = 0): `dfs(100, 13, [1, 10])` - returns immediately (100 > 13)
+        *   Loop (nextDigit = 1): `dfs(101, 13, [1, 10])` - returns immediately (101 > 13)
+        *   ...and so on
+    *   Loop (nextDigit = 1): `dfs(11, 13, [1, 10])`
+        *   `res.add(11)` `res` is now `[1, 10, 11]`
+        *   ...
+    *   Loop (nextDigit = 2): `dfs(12, 13, [1, 10, 11])`
+        *   `res.add(12)` `res` is now `[1, 10, 11, 12]`
+        *   ...
+    *   Loop (nextDigit = 3): `dfs(13, 13, [1, 10, 11, 12])`
+        *   `res.add(13)` `res` is now `[1, 10, 11, 12, 13]`
+        *   ...
+    *   Loop (nextDigit = 4): `dfs(14, 13, [1, 10, 11, 12, 13])` - returns immediately (14 > 13)
+    *   ...
+3.  **Loop (i = 2):** `dfs(2, 13, [1, 10, 11, 12, 13])`
+    *   `res.add(2)` `res` is now `[1, 10, 11, 12, 13, 2]`
+    *   ... and so on
+
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** O(N), where N is the input number `n`.  The DFS function visits each number at most once.
-*   **Space Complexity:** O(N), to store the resulting list of numbers in lexicographical order. The recursion stack in the DFS method has a depth proportional to the number of digits in `n`, but in the worst case, it scales with N, giving O(N) space complexity.
+**Method 1 (DFS):**
+
+*   **Time Complexity:**  **O(N)**.  In the worst case, we visit each number from 1 to `n`.
+*   **Space Complexity:** **O(N)**.  The depth of the recursion can be up to log10(N), and the `res` list stores up to `n` integers.
+
+**Method 2 (Sorting):**
+
+*   **Time Complexity:** **O(N log N)** due to the sorting step.
+*   **Space Complexity:** **O(N)** to store the strings and the result list.
     
