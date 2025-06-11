@@ -1,48 +1,122 @@
 # 00091 - Decode Ways
-    
+
 **Language:** Java  
 **Runtime:** 0 ms (Beats 100.00% of users)  
 **Memory:** 41.6 MB (Beats 87.31% of users)  
 
-## 📝 **LeetCode Problem**
-| 🔢 Problem Number | 📌 Title | 🔗 Link |
-|------------------|--------------------------|--------------------------|
-| 91 | Decode Ways | [LeetCode Problem](https://leetcode.com/problems/decode-ways/) |
+---
+
+## 📝 Problem Statement
+
+[LeetCode Problem 91: Decode Ways](https://leetcode.com/problems/decode-ways/)
+
+Given a string `s` containing only digits, return the total number of ways to decode it. Each digit or pair of digits can be mapped to a letter as follows:  
+- 'A' -> 1  
+- 'B' -> 2  
+- ...  
+- 'Z' -> 26  
+
+**Note:**  
+- '0' cannot be mapped to any letter.
+- Two consecutive digits can be combined only if they form a number between 10 and 26.
 
 ---
 
-## 💡 **Problem Explanation**
+## 📥 Example Inputs & Outputs
 
-The "Decode Ways" problem asks you to determine the number of ways a given string of digits can be decoded as a sequence of letters. Each digit maps to a letter: 'A' maps to 1, 'B' to 2, ..., 'Z' to 26.  The challenge arises from the fact that two digits can potentially be combined to represent a single letter (e.g., "12" can be decoded as "AB" or "L").
+| Input      | Output | Explanation                                  |
+|------------|--------|----------------------------------------------|
+| `s = "12"` | `2`    | "AB" (1 2), "L" (12)                        |
+| `s = "226"`| `3`    | "BZ" (2 26), "VF" (22 6), "BBF" (2 2 6)     |
+| `s = "06"` | `0`    | Invalid: '0' cannot be decoded              |
 
-**Example:**
-
-*   **Input:** `s = "12"`
-*   **Output:** `2`  ("AB" or "L")
-
-*   **Input:** `s = "226"`
-*   **Output:** `3` ("BZ", "VF", "BBF")
-
-*   **Input:** `s = "06"`
-*   **Output:** `0` (because "06" cannot be mapped to any valid character since '0' is invalid. Leading zero is invalid)
+**Stats:**  
+- **Language:** Java  
+- **Runtime:** 0 ms (Beats 100.00% of users)  
+- **Memory:** 41.6 MB (Beats 87.31% of users)  
 
 ---
 
-## 📊 **Algorithm**
+## 🧠 Algorithm Overview
 
-*   Initialize a `dp` array to store the number of ways to decode the string up to each index. This array will use memoization to avoid redundant computations.
-*   Implement a recursive function `decode(arr, dp, idx)` that takes the character array `arr`, the `dp` array, and the current index `idx` as input.
-*   **Base Cases:**
-    *   If `idx` reaches the end of the array, return 1 (one valid decoding).
-    *   If the current character is '0', return 0 (invalid decoding).
-    *   If `dp[idx]` is already computed, return its value.
-*   Recursively calculate the number of ways by decoding the next single digit (`decode(arr, dp, idx + 1)`).
-*   If possible, recursively calculate the number of ways by decoding the next two digits if they form a number between 10 and 26 (inclusive) and add it to the total ways (`decode(arr, dp, idx + 2)`).
-*   Store the result in `dp[idx]` and return it.
+This solution uses **top-down dynamic programming with memoization**.  
+- The recursive function explores all valid ways to decode the string, considering both single-digit and two-digit mappings.
+- Memoization ensures each subproblem is solved only once, resulting in O(N) time complexity.
+
+**Why this approach?**  
+- The problem has overlapping subproblems and optimal substructure, making DP ideal.
+- Recursion with memoization is intuitive and avoids redundant computation.
 
 ---
 
-## 🔥 **Code Implementation**
+## 🗃️ Variables & Data Structures
+
+| Name      | Type        | Purpose                                                                 |
+|-----------|-------------|-------------------------------------------------------------------------|
+| `arr`     | `char[]`    | Character array of the input string for easy access by index            |
+| `dp`      | `int[]`     | Memoization array; `dp[i]` stores number of ways to decode from index i  |
+| `idx`     | `int`       | Current index in the recursive function                                 |
+| `ways`    | `int`       | Number of ways to decode from the current index                         |
+
+---
+
+## 🪜 Step-by-Step Algorithm
+
+1. **Convert** the input string to a character array `arr`.
+2. **Initialize** a DP array `dp` of length `arr.length`, filled with -1.
+3. **Define** a recursive function `decode(arr, dp, idx)`:
+    - If `idx == arr.length`, return 1 (reached end, valid decoding).
+    - If `arr[idx] == '0'`, return 0 (invalid).
+    - If `dp[idx] != -1`, return `dp[idx]` (already computed).
+    - Set `ways = decode(arr, dp, idx + 1)` (single digit).
+    - If `idx + 1 < arr.length` and `10 <= num <= 26` for `num = arr[idx..idx+1]`, add `decode(arr, dp, idx + 2)` to `ways`.
+    - Store `ways` in `dp[idx]` and return it.
+
+---
+
+## 📊 Visual Diagram (ASCII)
+
+```
+s = "226"
+Indexes: 0   1   2
+         2   2   6
+
+Recursion Tree:
+decode(0)
+├── decode(1)
+│   ├── decode(2)
+│   │   └── decode(3) → 1
+│   └── decode(3) → 1
+└── decode(2)
+    └── decode(3) → 1
+```
+
+---
+
+## 🧩 Step-by-Step Walkthrough (Sample Input: "226")
+
+1. `decode(0)`:
+    - arr[0]='2', not '0', dp[0]=-1
+    - ways = decode(1)
+2. `decode(1)`:
+    - arr[1]='2', not '0', dp[1]=-1
+    - ways = decode(2)
+3. `decode(2)`:
+    - arr[2]='6', not '0', dp[2]=-1
+    - ways = decode(3)
+4. `decode(3)`:
+    - idx==arr.length, return 1
+    - dp[2]=1
+5. Back to `decode(1)`:
+    - ways=1
+    - arr[1..2]="26" (valid), ways += decode(3) → 1+1=2, dp[1]=2
+6. Back to `decode(0)`:
+    - ways=2
+    - arr[0..1]="22" (valid), ways += decode(2) → 2+1=3, dp[0]=3
+
+---
+
+## 🔥 Code Implementation
 
 ```java
 import java.util.Arrays;
@@ -78,67 +152,78 @@ class Solution {
 
 ---
 
-## 📊 **ASCII Representation**
+## 🧭 Programming Workflow
 
-This problem doesn't directly involve grids or trees.
+### Numbered Steps
+
+1. Convert input string to character array.
+2. Initialize DP array with -1.
+3. Call recursive decode function from index 0.
+4. For each call:
+    - If at end, return 1.
+    - If current char is '0', return 0.
+    - If already computed, return dp value.
+    - Recurse for single digit.
+    - If valid, recurse for two digits.
+    - Store and return result.
+
+### Flowchart
+
+```
++-----------------------------+
+| Start: numDecodings(s)      |
++-------------+---------------+
+              |
+              v
++-----------------------------+
+| Convert s to arr, init dp[] |
++-------------+---------------+
+              |
+              v
++-----------------------------+
+| decode(arr, dp, idx=0)      |
++-------------+---------------+
+              |
+              v
++-----------------------------+
+| idx == arr.length?          |
++----+------------------------+
+     | Yes                    | No
+     v                        v
+ Return 1           arr[idx] == '0'?
+                         | Yes | No
+                         v     v
+                     Return 0  dp[idx] != -1?
+                                 | Yes | No
+                                 v     v
+                             Return   Recurse
+                             dp[idx]  for idx+1
+                                 |
+                                 v
+                    idx+1 < arr.length and
+                    10 <= num <= 26?
+                         | Yes | No
+                         v     v
+                Recurse for idx+2
+                         |
+                         v
+                Store result in dp[idx]
+                         |
+                         v
+                      Return
+```
 
 ---
 
-## 📊 **TABLE Representation**
+## 🚀 Complexity Analysis
 
-Let's consider the input string `s = "226"`.  The `dp` array will store the number of ways to decode the string starting from each index.
-
-| Index | Character | `dp` Value | Explanation                                                                         |
-|-------|-----------|------------|-------------------------------------------------------------------------------------|
-| 0     | 2         | 3          | 2 can be decoded alone (B), or with the next character (22 = V)                     |
-| 1     | 2         | 2          | 2 can be decoded alone (B), or with the next character (26 = Z)                     |
-| 2     | 6         | 1          | 6 can only be decoded alone (F)                                                     |
+- **Time Complexity:** O(N), where N is the length of `s` (each index is computed once).
+- **Space Complexity:** O(N), for the DP array and recursion stack.
 
 ---
 
-## 📊 **WORKING**
+## 📚 References
 
-Let's trace the `decode` function for the input `s = "226"`:
-
-1. `decode(arr, dp, 0)`:
-   *   `arr[0]` is '2', not '0'.
-   *   `dp[0]` is -1 (not computed yet).
-   *   `ways = decode(arr, dp, 1)`
-2. `decode(arr, dp, 1)`:
-   *   `arr[1]` is '2', not '0'.
-   *   `dp[1]` is -1 (not computed yet).
-   *   `ways = decode(arr, dp, 2)`
-3. `decode(arr, dp, 2)`:
-   *   `arr[2]` is '6', not '0'.
-   *   `dp[2]` is -1 (not computed yet).
-   *   `ways = decode(arr, dp, 3)`
-4. `decode(arr, dp, 3)`:
-   *   `idx == arr.length`, return 1.
-   *   `dp[2] = 1` (ways to decode "6" is 1: "F").
-   *   Return 1.
-5. Back in `decode(arr, dp, 1)`:
-   *   `ways = 1`
-   *   `idx + 1 < arr.length` is true (1 < 3).
-   *   `num = 26`. `num >= 10 && num <= 26` is true.
-   *   `ways += decode(arr, dp, 3)`
-   *   `decode(arr, dp, 3)` returns 1
-   *   `ways = 1 + 1 = 2`.
-   *   `dp[1] = 2` (ways to decode "26" is 2: "BF", "Z")
-   *   Return 2.
-6. Back in `decode(arr, dp, 0)`:
-   *   `ways = 2`
-   *   `idx + 1 < arr.length` is true (0 < 3).
-   *   `num = 22`. `num >= 10 && num <= 26` is true.
-   *   `ways += decode(arr, dp, 2)`
-   *   `decode(arr, dp, 2)` returns 1
-   *   `ways = 2 + 1 = 3`.
-   *   `dp[0] = 3` (ways to decode "226" is 3: "BZ", "VF", "BBF").
-   *   Return 3.
-
----
-
-## 🚀 **Time & Space Complexity**
-
-*   **Time Complexity:**  **O(N)**, where N is the length of the string `s`, due to memoization.  Each index is visited at most once.
-*   **Space Complexity:** **O(N)**, for the `dp` array and the recursion call stack.
-    
+- [LeetCode Editorial](https://leetcode.com/problems/decode-ways/editorial/)
+- [Dynamic Programming - Memoization](https://en.wikipedia.org/wiki/Memoization)
+- [Top-Down DP vs Bottom-Up DP](https://www.geeksforgeeks.org/tabulation-vs-memoization/)
