@@ -72,14 +72,27 @@ We use a **greedy approach** with a `TreeMap` to efficiently find the smallest a
 For `players = [4,7,9]`, `trainers = [8,2,5,8]`:
 
 ```
-Players:   4   7   9
-           |   |
-Trainers:  2   5   8   8
+Players:   4     7     9
+            |     |
+Trainers: 2  5  8  8
 
 Matching:
 - Player 4 → Trainer 5
-- Player 7 → Trainer 8
+- Player 7 → Trainer 8 (first 8)
 - Player 9 → (no trainer available)
+```
+
+Or, as a bipartite matching diagram:
+
+```
+Players:   4     7     9
+             \   |
+Trainers: 2   5   8   8
+
+Matching:
+- 4 matched to 5
+- 7 matched to 8 (first 8)
+- 9 not matched
 ```
 
 ### Table Representation
