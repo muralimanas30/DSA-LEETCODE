@@ -1,54 +1,110 @@
-# 02410 - Maximum Matching Of Players With Trainers
-    
+# 02410 - Maximum Matching of Players With Trainers
+
 **Language:** Java  
 **Runtime:** 137 ms (Beats 5.41% of users)  
 **Memory:** 58.3 MB (Beats 35.71% of users)  
 
-## 📝 **LeetCode Problem**
-| 🔢 Problem Number | 📌 Title | 🔗 Link |
-|------------------|--------------------------|--------------------------|
-| 2410 | MAXIMUM MATCHING OF PLAYERS WITH TRAINERS | [LeetCode Problem](https://leetcode.com/problems/maximum-matching-of-players-with-trainers/) |
+---
+
+## 📎 External Link
+
+- [LeetCode Problem 2410: Maximum Matching of Players With Trainers](https://leetcode.com/problems/maximum-matching-of-players-with-trainers/)
 
 ---
 
-## 💡 **Problem Explanation**
+## 📝 Problem Statement
 
-Imagine you have a group of players, each with a certain skill level, and a group of trainers, each with a certain training capacity.  You want to find the maximum number of players you can match with trainers, such that the trainer's capacity is greater than or equal to the player's skill.
+Given two integer arrays, `players` and `trainers`, representing the skill levels of players and the training capacities of trainers, respectively, match each player to at most one trainer such that the trainer's capacity is greater than or equal to the player's skill. Each trainer can be matched with at most one player. Return the maximum number of players that can be matched.
 
-For example:
+---
+
+## 📚 Example Inputs & Outputs
+
+| Input | Output | Explanation |
+|-------|--------|-------------|
+| `players = [4,7,9]`<br>`trainers = [8,2,5,8]` | `2` | Player 1 (4) → Trainer 3 (5), Player 2 (7) → Trainer 1 (8). Player 3 (9) cannot be matched. |
+| `players = [1,1,1]`<br>`trainers = [10]` | `1` | Only one trainer, so only one player can be matched. |
+| `players = [5,6]`<br>`trainers = [1,2,3]` | `0` | No trainer can train any player. |
+
+---
+
+## 🏆 Solution Overview
+
+This problem is a variant of the bipartite matching problem.  
+We use a **greedy approach** with a `TreeMap` to efficiently find the smallest available trainer who can train each player.
+
+- **Why this approach?**
+  - Sorting and greedy matching ensures that each player is matched with the least capable trainer who can handle them, maximizing the number of matches.
+  - `TreeMap` allows for efficient lookup and removal of trainers by capacity.
+
+---
+
+## 🧩 Variables & Data Structures
+
+| Name      | Type                  | Purpose                                                                 |
+|-----------|-----------------------|-------------------------------------------------------------------------|
+| `freqT`   | `TreeMap<Integer,Integer>` | Stores the count of trainers for each capacity (acts as a multiset).    |
+| `players` | `int[]`               | Array of player skill levels.                                           |
+| `trainers`| `int[]`               | Array of trainer capacities.                                            |
+| `count`   | `int`                 | Number of successful player-trainer matches.                            |
+| `key`     | `Integer`             | The least trainer capacity ≥ player's skill (from `TreeMap`).           |
+
+---
+
+## 🛠️ Step-by-Step Algorithm
+
+1. **Build Trainer Capacity Map:**
+   - For each trainer, increment their capacity count in `freqT`.
+
+2. **Iterate Over Players:**
+   - For each player, use `ceilingKey` to find the smallest trainer capacity that can train them.
+   - If found, decrement or remove that trainer from `freqT` and increment the match count.
+
+3. **Return the Match Count:**
+   - After all players are processed, return the total number of matches.
+
+---
+
+## 🎨 Visual Diagrams
+
+### Example Matching
+
+For `players = [4,7,9]`, `trainers = [8,2,5,8]`:
+
+```
+Players:   4   7   9
+           |   |
+Trainers:  2   5   8   8
+
+Matching:
+- Player 4 → Trainer 5
+- Player 7 → Trainer 8
+- Player 9 → (no trainer available)
+```
+
+### Table Representation
+
+| Player Skill | Trainer Chosen | Trainer Capacity | Remaining Trainers |
+|--------------|---------------|------------------|--------------------|
+| 4            | Yes           | 5                | 2,8,8              |
+| 7            | Yes           | 8                | 2,8                |
+| 9            | No            | -                | 2,8                |
+
+---
+
+## 🧮 Step-by-Step Walkthrough
 
 **Input:** `players = [4,7,9]`, `trainers = [8,2,5,8]`
-**Output:** `2`
 
-**Explanation:**
-
-*   Player 1 (skill 4) can be matched with trainer 1 (capacity 8) or trainer 3 (capacity 5) or trainer 4 (capacity 8).
-*   Player 2 (skill 7) can be matched with trainer 1 (capacity 8) or trainer 4 (capacity 8).
-*   Player 3 (skill 9) can be matched with trainer 1 (capacity 8) or trainer 4 (capacity 8).
-
-An optimal matching would be:
-
-*   Player 1 (4) -> Trainer 3 (5)
-*   Player 2 (7) -> Trainer 1 (8)
-
-Another possible optimal matching:
-*   Player 1 (4) -> Trainer 1 (8)
-*   Player 2 (7) -> Trainer 4 (8)
-
-Thus, the maximum number of players that can be matched is 2.
+1. **Build freqT:** `{2:1, 5:1, 8:2}`
+2. **Player 4:** `ceilingKey(4)` → 5. Match. Remove 5. `freqT = {2:1, 8:2}`. `count = 1`
+3. **Player 7:** `ceilingKey(7)` → 8. Match. Remove one 8. `freqT = {2:1, 8:1}`. `count = 2`
+4. **Player 9:** `ceilingKey(9)` → null. No match.
+5. **Return:** `2`
 
 ---
 
-## 📊 **Algorithm**
-
-*   Sort both the `players` and `trainers` arrays.  Sorting allows us to efficiently find matches by iterating through both arrays with two pointers.
-*   Initialize two pointers, `i` for `players` and `j` for `trainers`, both starting at 0.
-*   Iterate while both `i` is less than the length of `players` and `j` is less than the length of `trainers`.
-*   If `players[i]` is less than or equal to `trainers[j]`, it means we can match the player with the trainer. Increment both `i` and `j`, and increment the `count` of matched players.
-*   Otherwise, if `players[i]` is greater than `trainers[j]`, it means the current trainer is not capable of training the current player. Increment `j` to consider the next trainer.
-*   Return the final `count` of matched players.
-
-## 🔥 **Code Implementation**
+## 💻 Java Code Implementation
 
 ```java
 import java.util.TreeMap;
@@ -74,8 +130,55 @@ class Solution {
 }
 ```
 
-## 🚀 **Time & Space Complexity**
+---
 
-*   **Time Complexity:** O(n log n + m log m), where n is the number of players and m is the number of trainers. This is due to the sorting of both arrays.  The `TreeMap` operations such as `ceilingKey`, `put`, and `remove` take O(log m) time in the worst case and are called at most n times in total, thus contributing to O(n log m). Overall, sorting dominates resulting in O(n log n + m log m) for the overall algorithm.
-*   **Space Complexity:** O(m) in the worst case, where m is the number of trainers.  This is because the `TreeMap` `freqT` can store at most `m` key-value pairs, where `m` is the number of trainers.
-    
+## 🛠️ Programming Workflow
+
+### Logical Flow (Numbered List)
+
+1. Initialize a `TreeMap` to count trainer capacities.
+2. For each trainer, increment their count in the map.
+3. For each player:
+    - Find the smallest trainer capacity ≥ player's skill.
+    - If found, decrement/remove trainer from map and increment match count.
+4. Return the total match count.
+
+### Flowchart (ASCII Art)
+
+```
++-------------------------------+
+| 1. Build trainer capacity map |
++---------------+---------------+
+                |
+                v
++-------------------------------+
+| 2. For each player:           |
+|   a. Find trainer ≥ skill     |
+|   b. If found:                |
+|      - Remove/decrement trainer|
+|      - Increment match count  |
++---------------+---------------+
+                |
+                v
++-------------------------------+
+| 3. Return match count         |
++-------------------------------+
+```
+
+---
+
+## ⏱️ Complexity Analysis
+
+- **Time Complexity:** `O(n log m)`  
+  - For each player (`n`), `ceilingKey`/`put`/`remove` in `TreeMap` take `O(log m)` where `m` is the number of trainers.
+  - If sorting is needed for players/trainers, add `O(n log n + m log m)` (not present in this code).
+- **Space Complexity:** `O(m)`  
+  - For the `TreeMap` storing trainer capacities.
+
+---
+
+## 📚 References
+
+- [LeetCode Problem 2410](https://leetcode.com/problems/maximum-matching-of-players-with-trainers/)
+- [TreeMap (Java SE Documentation)](https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html)
+- [Greedy Algorithms (GeeksforGeeks)](https://www.geeksforgeeks.org/greedy-algorithms/)
