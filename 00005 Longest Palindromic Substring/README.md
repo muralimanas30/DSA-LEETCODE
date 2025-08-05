@@ -1,45 +1,121 @@
 # 00005 - Longest Palindromic Substring
-    
+
 **Language:** Java  
 **Runtime:** 96 ms (Beats 38.01% of users)  
 **Memory:** 46.4 MB (Beats 11.88% of users)  
 
-## 📝 **LeetCode Problem**
-| 🔢 Problem Number | 📌 Title | 🔗 Link |
-|------------------|--------------------------|--------------------------|
-| 5 | LONGEST PALINDROMIC SUBSTRING | [LeetCode Problem](https://leetcode.com/problems/longest-palindromic-substring/) |
+---
+
+## 📎 External Link
+
+- [LeetCode Problem 5: Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/)
 
 ---
 
-## 💡 **Problem Explanation**
+## 📝 Problem Statement
 
-Given a string `s`, find the longest palindromic substring in `s`. A palindromic substring is a string that reads the same forwards and backward.
-
-**Example:**
-
-Input: `s = "babad"`
-Output: `"bab"` or `"aba"` (Both are valid longest palindromes)
-
-Input: `s = "cbbd"`
-Output: `"bb"`
-
-Input: `s = "a"`
-Output: `"a"`
+Given a string `s`, return the longest palindromic substring in `s`.  
+A palindrome is a sequence that reads the same forwards and backwards (e.g., "madam", "racecar").
 
 ---
 
-## 📊 **Algorithm**
+## 📚 Example Inputs & Outputs
 
-*   Initialize a 2D boolean array `dp` where `dp[i][j]` will store whether the substring `s[i...j]` is a palindrome.
-*   All single characters are palindromes (`dp[i][i] = true`).
-*   Iterate through substrings of increasing length (from 2 to n).
-*   For each length, iterate through all possible starting positions `i`.
-*   Calculate the ending position `j` as `i + length - 1`.
-*   If `s[i]` and `s[j]` are equal and either the substring has length <= 2 or the substring `s[i+1...j-1]` is a palindrome (as stored in `dp[i+1][j-1]`), then `dp[i][j]` is true.
-*   Keep track of the starting position and length of the longest palindrome found so far.
-*   Finally, return the longest palindromic substring using the stored starting position and length.
+| Input         | Output | Explanation                                                                 |
+|---------------|--------|-----------------------------------------------------------------------------|
+| `s = "babad"` | `"bab"` or `"aba"` | Both "bab" and "aba" are valid longest palindromic substrings.      |
+| `s = "cbbd"`  | `"bb"` | "bb" is the longest palindromic substring.                                  |
+| `s = "a"`     | `"a"`  | Single character is always a palindrome.                                    |
+| `s = "ac"`    | `"a"` or `"c"` | Both are valid, as no longer palindrome exists.                      |
 
-## 🔥 **Code Implementation**
+---
+
+## 🏆 Solution Overview
+
+This problem is solved using **Dynamic Programming**.  
+We use a 2D boolean table `dp` where `dp[i][j]` is `true` if the substring `s[i...j]` is a palindrome.
+
+**Why this approach?**
+- Dynamic programming efficiently checks all possible substrings and avoids redundant computations.
+- It allows us to build up solutions for longer substrings using results from shorter ones.
+
+---
+
+## 🧩 Variables & Data Structures
+
+| Name        | Type            | Purpose                                                                 |
+|-------------|-----------------|-------------------------------------------------------------------------|
+| `dp`        | `boolean[][]`   | `dp[i][j]` is true if `s[i...j]` is a palindrome.                      |
+| `arr`       | `char[]`        | Character array of the input string.                                    |
+| `n`         | `int`           | Length of the input string.                                             |
+| `maxLength` | `int`           | Length of the longest palindromic substring found so far.               |
+| `start`     | `int`           | Starting index of the longest palindromic substring.                    |
+| `i, j`      | `int`           | Indices for substring boundaries.                                       |
+| `length`    | `int`           | Current substring length being checked.                                 |
+
+---
+
+## 🛠️ Step-by-Step Algorithm
+
+1. Convert the input string to a character array.
+2. Initialize a 2D boolean array `dp` of size `(n+1) x (n+1)`.
+3. Set all substrings of length 1 as palindromes (`dp[i][i] = true`).
+4. For substring lengths from 2 to `n`:
+    - For each possible starting index `i`, calculate ending index `j = i + length - 1`.
+    - If `arr[i] == arr[j]` and (length ≤ 2 or `dp[i+1][j-1]` is true), set `dp[i][j] = true`.
+    - If a palindrome is found and its length is greater than `maxLength`, update `maxLength` and `start`.
+5. Return the substring from `start` to `start + maxLength`.
+
+---
+
+## 🎨 Visual Diagram
+
+### Example: `s = "babad"`
+
+```
+String indices:  0 1 2 3 4
+Characters:      b a b a d
+
+DP Table (T = true, F = false):
+
+      0   1   2   3   4
+    +---+---+---+---+---+
+ 0| T | F | T | F | F |
+ 1|   | T | F | T | F |
+ 2|   |   | T | F | F |
+ 3|   |   |   | T | F |
+ 4|   |   |   |   | T |
+```
+
+- Diagonal: All substrings of length 1 are palindromes.
+- `dp[0][2]` ("bab") and `dp[1][3]` ("aba") are true (palindromes of length 3).
+
+---
+
+## 🧮 Step-by-Step Walkthrough
+
+**Input:** `s = "babad"`
+
+1. **Initialization:**  
+   - `dp[i][i] = true` for all `i`.
+   - `maxLength = 1`, `start = 0`.
+
+2. **Length = 2:**  
+   - Check "ba", "ab", "ba", "ad" — none are palindromes.
+
+3. **Length = 3:**  
+   - "bab": `s[0] == s[2]` and `dp[1][1]` is true ⇒ palindrome. Update `maxLength = 3`, `start = 0`.
+   - "aba": `s[1] == s[3]` and `dp[2][2]` is true ⇒ palindrome. (No update since length not greater than current max.)
+
+4. **Lengths 4 and 5:**  
+   - No new palindromes found.
+
+5. **Result:**  
+   - Return substring from `start = 0` of length `maxLength = 3` ⇒ `"bab"`.
+
+---
+
+## 💻 Java Code Implementation
 
 ```java
 class Solution {
@@ -69,46 +145,64 @@ class Solution {
 }
 ```
 
-## 📊 **TABLE Representation**
+---
 
-Let's consider the input `s = "babad"` to visualize the `dp` table.
+## 🛠️ Programming Workflow
 
-|       | 0 (b) | 1 (a) | 2 (b) | 3 (a) | 4 (d) |
-| :---- | :---- | :---- | :---- | :---- | :---- |
-| **0 (b)** | true  | false | true  | false | false |
-| **1 (a)** |       | true  | false | true  | false |
-| **2 (b)** |       |       | true  | false | false |
-| **3 (a)** |       |       |       | true  | false |
-| **4 (d)** |       |       |       |       | true  |
+### Logical Flow (Numbered List)
 
-## 📊 **WORKING**
+1. Convert input string to character array.
+2. Initialize DP table and set all substrings of length 1 as palindromes.
+3. For each substring length from 2 to n:
+    - For each possible start index:
+        - Check if substring is palindrome using DP.
+        - Update max length and start if needed.
+4. Return the longest palindromic substring.
 
-Let's trace the execution with the input "babad".
+### Flowchart (ASCII Art)
 
-1.  Initialize `dp` table. `dp[i][i] = true` for all `i`. `maxLength = 1`, `start = 0`.
+```
++-----------------------------------+
+| 1. Convert string to char array   |
++-------------------+---------------+
+                    |
+                    v
++-----------------------------------+
+| 2. Initialize DP table            |
+|    - dp[i][i] = true              |
++-------------------+---------------+
+                    |
+                    v
++-----------------------------------+
+| 3. For length = 2 to n:           |
+|    For i = 0 to n-length:         |
+|      j = i + length - 1           |
+|      If arr[i]==arr[j] &&         |
+|         (length<=2 || dp[i+1][j-1])|
+|        dp[i][j]=true              |
+|        Update maxLength/start     |
++-------------------+---------------+
+                    |
+                    v
++-----------------------------------+
+| 4. Return s.substring(start,      |
+|    start+maxLength)               |
++-----------------------------------+
+```
 
-2.  `length = 2`:
-    *   `i = 0`, `j = 1`: `s[0] != s[1]` (`b != a`), `dp[0][1] = false`.
-    *   `i = 1`, `j = 2`: `s[1] != s[2]` (`a != b`), `dp[1][2] = false`.
-    *   `i = 2`, `j = 3`: `s[2] != s[3]` (`b != a`), `dp[2][3] = false`.
-    *   `i = 3`, `j = 4`: `s[3] != s[4]` (`a != d`), `dp[3][4] = false`.
+---
 
-3.  `length = 3`:
-    *   `i = 0`, `j = 2`: `s[0] == s[2]` (`b == b`) and `dp[1][1]` is true, `dp[0][2] = true`. `maxLength = 3`, `start = 0`.  Longest Palindrome found is "bab".
-    *   `i = 1`, `j = 3`: `s[1] == s[3]` (`a == a`) and `dp[2][2]` is true, `dp[1][3] = true`. `maxLength = 3`, `start = 1`.  Longest Palindrome found is "aba".
-    *   `i = 2`, `j = 4`: `s[2] != s[4]` (`b != d`), `dp[2][4] = false`.
+## ⏱️ Complexity Analysis
 
-4.  `length = 4`:
-    *   `i = 0`, `j = 3`: `s[0] != s[3]` (`b != a`), `dp[0][3] = false`.
-    *   `i = 1`, `j = 4`: `s[1] != s[4]` (`a != d`), `dp[1][4] = false`.
+- **Time Complexity:** O(n²)  
+  - Two nested loops over the string length.
+- **Space Complexity:** O(n²)  
+  - For the DP table.
 
-5.  `length = 5`:
-    *   `i = 0`, `j = 4`: `s[0] != s[4]` (`b != d`), `dp[0][4] = false`.
+---
 
-Finally, the substring `s.substring(start, start + maxLength)` is returned.  Since `start` is `1` and `maxLength` is `3`, "aba" is returned.  "bab" is another possible solution since there are 2 palindromes with same length.
+## 📚 References
 
-## 🚀 **Time & Space Complexity**
-
-*   **Time Complexity:** O(n^2), where n is the length of the input string `s`.  This is due to the nested loops required to fill the `dp` table.
-*   **Space Complexity:** O(n^2), due to the `dp` table of size (n+1)x(n+1).
-    
+- [LeetCode Problem 5: Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/)
+- [Dynamic Programming (GeeksforGeeks)](https://www.geeksforgeeks.org/dynamic-programming/)
+- [Palindrome (Wikipedia)](https://en.wikipedia.org/wiki/Palindrome)
