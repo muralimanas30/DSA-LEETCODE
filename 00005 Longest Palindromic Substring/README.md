@@ -13,32 +13,31 @@
 
 ## 💡 **Problem Explanation**
 
-The problem asks us to find the longest palindromic substring within a given string `s`. A palindromic substring is a sequence of characters that reads the same forwards and backward.
+Given a string `s`, find the longest palindromic substring in `s`. A palindromic substring is a string that reads the same forwards and backward.
 
-**Example 1:**
+**Example:**
 
-*   **Input:** `s = "babad"`
-*   **Output:** `"bab"` (or `"aba"`)
+Input: `s = "babad"`
+Output: `"bab"` or `"aba"` (Both are valid longest palindromes)
 
-**Explanation:** Both `"bab"` and `"aba"` are palindromes of length 3 within the string `"babad"`.
+Input: `s = "cbbd"`
+Output: `"bb"`
 
-**Example 2:**
-
-*   **Input:** `s = "cbbd"`
-*   **Output:** `"bb"`
-
-**Explanation:** The longest palindromic substring is `"bb"` of length 2.
+Input: `s = "a"`
+Output: `"a"`
 
 ---
 
 ## 📊 **Algorithm**
 
-*   Initialize a 2D boolean array `dp` where `dp[i][j]` represents whether the substring `s[i...j]` is a palindrome.
-*   All single characters are palindromes, so initialize the diagonal of `dp` to `true`.
-*   Iterate through substrings of increasing length, starting from length 2.
-*   For each substring, check if the characters at the start and end are equal. If they are, and either the substring length is less than or equal to 2, or the inner substring `s[i+1...j-1]` is also a palindrome (as indicated by `dp[i+1][j-1]`), then `s[i...j]` is a palindrome.
-*   Keep track of the longest palindromic substring found so far.
-*   Return the longest palindromic substring.
+*   Initialize a 2D boolean array `dp` where `dp[i][j]` will store whether the substring `s[i...j]` is a palindrome.
+*   All single characters are palindromes (`dp[i][i] = true`).
+*   Iterate through substrings of increasing length (from 2 to n).
+*   For each length, iterate through all possible starting positions `i`.
+*   Calculate the ending position `j` as `i + length - 1`.
+*   If `s[i]` and `s[j]` are equal and either the substring has length <= 2 or the substring `s[i+1...j-1]` is a palindrome (as stored in `dp[i+1][j-1]`), then `dp[i][j]` is true.
+*   Keep track of the starting position and length of the longest palindrome found so far.
+*   Finally, return the longest palindromic substring using the stored starting position and length.
 
 ## 🔥 **Code Implementation**
 
@@ -72,38 +71,44 @@ class Solution {
 
 ## 📊 **TABLE Representation**
 
-For the input `s = "babad"`, the `dp` table would evolve as follows:
+Let's consider the input `s = "babad"` to visualize the `dp` table.
 
-|       | b (0) | a (1) | b (2) | a (3) | d (4) |
+|       | 0 (b) | 1 (a) | 2 (b) | 3 (a) | 4 (d) |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| **b (0)** | T     | F     | T     | F     | F     |
-| **a (1)** |       | T     | F     | T     | F     |
-| **b (2)** |       |       | T     | F     | F     |
-| **a (3)** |       |       |       | T     | F     |
-| **d (4)** |       |       |       |       | T     |
+| **0 (b)** | true  | false | true  | false | false |
+| **1 (a)** |       | true  | false | true  | false |
+| **2 (b)** |       |       | true  | false | false |
+| **3 (a)** |       |       |       | true  | false |
+| **4 (d)** |       |       |       |       | true  |
 
-**Explanation:**
+## 📊 **WORKING**
 
-1.  **Initialization:** `dp[i][i]` is `true` for all `i`.
-2.  **Length 2:**
-    *   `dp[0][1] = false` (b != a)
-    *   `dp[1][2] = false` (a != b)
-    *   `dp[2][3] = false` (b != a)
-    *   `dp[3][4] = false` (a != d)
-3.  **Length 3:**
-    *   `dp[0][2] = true` (b == b and dp[1][1] is true)
-    *   `dp[1][3] = true` (a == a and dp[2][2] is true)
-    *   `dp[2][4] = false` (b != d)
-4.  **Length 4:**
-    *   `dp[0][3] = false` (b != a)
-    *   `dp[1][4] = false` (a != d)
-5.  **Length 5:**
-    *   `dp[0][4] = false` (b != d)
+Let's trace the execution with the input "babad".
 
-The longest palindrome is `"bab"` (or `"aba"`) with a length of 3, starting at index 0 (or 1).
+1.  Initialize `dp` table. `dp[i][i] = true` for all `i`. `maxLength = 1`, `start = 0`.
+
+2.  `length = 2`:
+    *   `i = 0`, `j = 1`: `s[0] != s[1]` (`b != a`), `dp[0][1] = false`.
+    *   `i = 1`, `j = 2`: `s[1] != s[2]` (`a != b`), `dp[1][2] = false`.
+    *   `i = 2`, `j = 3`: `s[2] != s[3]` (`b != a`), `dp[2][3] = false`.
+    *   `i = 3`, `j = 4`: `s[3] != s[4]` (`a != d`), `dp[3][4] = false`.
+
+3.  `length = 3`:
+    *   `i = 0`, `j = 2`: `s[0] == s[2]` (`b == b`) and `dp[1][1]` is true, `dp[0][2] = true`. `maxLength = 3`, `start = 0`.  Longest Palindrome found is "bab".
+    *   `i = 1`, `j = 3`: `s[1] == s[3]` (`a == a`) and `dp[2][2]` is true, `dp[1][3] = true`. `maxLength = 3`, `start = 1`.  Longest Palindrome found is "aba".
+    *   `i = 2`, `j = 4`: `s[2] != s[4]` (`b != d`), `dp[2][4] = false`.
+
+4.  `length = 4`:
+    *   `i = 0`, `j = 3`: `s[0] != s[3]` (`b != a`), `dp[0][3] = false`.
+    *   `i = 1`, `j = 4`: `s[1] != s[4]` (`a != d`), `dp[1][4] = false`.
+
+5.  `length = 5`:
+    *   `i = 0`, `j = 4`: `s[0] != s[4]` (`b != d`), `dp[0][4] = false`.
+
+Finally, the substring `s.substring(start, start + maxLength)` is returned.  Since `start` is `1` and `maxLength` is `3`, "aba" is returned.  "bab" is another possible solution since there are 2 palindromes with same length.
 
 ## 🚀 **Time & Space Complexity**
 
-*   **Time Complexity:** **O(n^2)**, where `n` is the length of the string `s`, due to the nested loops used to populate the `dp` table.
-*   **Space Complexity:** **O(n^2)**, to store the `dp` table.
+*   **Time Complexity:** O(n^2), where n is the length of the input string `s`.  This is due to the nested loops required to fill the `dp` table.
+*   **Space Complexity:** O(n^2), due to the `dp` table of size (n+1)x(n+1).
     
