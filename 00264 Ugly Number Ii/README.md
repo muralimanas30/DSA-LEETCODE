@@ -1,129 +1,100 @@
-# 00264 - Ugly Number II
-
+# 00264 - Ugly Number Ii
+    
 **Language:** Java  
 **Runtime:** 48 ms (Beats 31.35% of users)  
 **Memory:** 44.6 MB (Beats 27.47% of users)  
 
----
-
-## 📎 External Link
-
-- [LeetCode Problem 264: Ugly Number II](https://leetcode.com/problems/ugly-number-ii/)
-
----
-
-## 📝 Problem Statement
-
-Given an integer `n`, return the *n*th ugly number.  
-Ugly numbers are positive numbers whose prime factors only include 2, 3, and 5. The sequence starts with 1, and each subsequent ugly number is the smallest number greater than the previous ugly number that can be formed by multiplying previous ugly numbers by 2, 3, or 5.
+# 📝 **LeetCode Problem**
+| 🔢 Problem Number | 📌 Title | 🔗 Link |
+|------------------|--------------------------|--------------------------|
+| 264 | UGLY NUMBER II | [LeetCode Problem](https://leetcode.com/problems/ugly-number-ii/) |
 
 ---
 
-## 📚 Example Inputs & Outputs
+## 💡 **Problem Explanation**
 
-| Input | Output | Explanation |
-|-------|--------|-------------|
-| `n = 10` | `12` | The sequence is `[1, 2, 3, 4, 5, 6, 8, 9, 10, 12, ...]`. The 10th ugly number is 12. |
-| `n = 1`  | `1`  | The first ugly number is always 1. |
-| `n = 7`  | `8`  | The sequence up to the 7th ugly number is `[1, 2, 3, 4, 5, 6, 8]`. |
+An **ugly number** is a positive integer whose prime factors are limited to `2`, `3`, and `5`. The sequence starts with `1` and continues with numbers formed by multiplying previous ugly numbers by these factors.
 
----
+The goal is to find the **n-th** ugly number in this sequence.
 
-## 🏆 Solution Overview
+> **For example:** The first 10 ugly numbers are `1, 2, 3, 4, 5, 6, 8, 9, 10, 12`.
+> If `n = 10`, the output should be `12`.
 
-This solution uses a **min-heap (priority queue)** and a **set** to generate ugly numbers in ascending order and avoid duplicates.
+### Sample I/O
+- **Input**: `n = 10`
+- **Output**: `12`
 
-**Why this approach?**
-- The min-heap ensures we always process the smallest available ugly number.
-- The set prevents duplicate entries in the heap.
-- Multiplying each extracted ugly number by 2, 3, and 5 generates new candidates efficiently.
+- **Input**: `n = 1`
+- **Output**: `1`
 
 ---
 
-## 🧩 Variables & Data Structures
+## 📊 **Algorithm**
 
-| Name        | Type                      | Purpose                                                      |
-|-------------|---------------------------|--------------------------------------------------------------|
-| `minHeap`   | `PriorityQueue<Long>`     | Stores ugly numbers in ascending order for extraction.       |
-| `seen`      | `Set<Long>`               | Tracks numbers already added to the heap to avoid duplicates.|
-| `factors`   | `long[]`                  | Array of allowed prime factors: `[2, 3, 5]`.                 |
-| `uglyNumber`| `long`                    | Current ugly number being processed.                         |
-| `n`         | `int`                     | The position of the ugly number to find.                     |
+The core idea is to generate ugly numbers in sorted order and pick the n-th one. A **Min-Heap** is the perfect data structure for this, as it always gives us the smallest element efficiently. We also use a **Set** to avoid adding duplicate ugly numbers to our heap.
 
----
+-   1️⃣ **Initialization**:
+    -   Create a `minHeap` (PriorityQueue) to store ugly number candidates.
+    -   Create a `seen` set (HashSet) to track numbers already added to the heap, preventing duplicates.
+    -   Add the first ugly number, `1L`, to both the `minHeap` and the `seen` set.
 
-## 🛠️ Step-by-Step Algorithm
+-   2️⃣ **Iterative Generation**:
+    -   Loop `n` times to find the n-th ugly number.
+    -   In each iteration, extract the smallest number from the heap using `minHeap.poll()`. Let's call this `uglyNumber`. This is the next number in our sorted ugly number sequence.
 
-1. **Initialize Data Structures:**
-   - Add `1` to both the min-heap and the set.
-2. **Iterate `n` Times:**
-   - Extract the smallest ugly number from the heap.
-   - For each factor (2, 3, 5):
-     - Multiply the extracted number by the factor.
-     - If the result is not in the set, add it to both the heap and the set.
-3. **After `n` iterations, return the last extracted ugly number.**
+-   3️⃣ **Expand and Add**:
+    -   For the extracted `uglyNumber`, generate its potential children by multiplying it by the factors `2`, `3`, and `5`.
+    -   For each new candidate (`next = uglyNumber * factor`):
+        -   Check if this candidate is in the `seen` set.
+        -   If it's **not seen**, add it to both the `minHeap` and the `seen` set. This ensures we only process each unique ugly number once.
 
----
-
-## 🎨 Visual Diagram
-
-### Table Representation of Heap Operations
-
-| Iteration | Extracted Ugly Number | Multiplied By | Next Candidates | Added to Heap |
-|-----------|----------------------|---------------|-----------------|---------------|
-| 1         | 1                    | 2, 3, 5       | 2, 3, 5         | 2, 3, 5       |
-| 2         | 2                    | 2, 3, 5       | 4, 6, 10        | 4, 6, 10      |
-| 3         | 3                    | 2, 3, 5       | 6, 9, 15        | 9, 15         |
-| 4         | 4                    | 2, 3, 5       | 8, 12, 20       | 8, 12, 20     |
-| 5         | 5                    | 2, 3, 5       | 10, 15, 25      | 25            |
-| 6         | 6                    | 2, 3, 5       | 12, 18, 30      | 18, 30        |
+-   4️⃣ **Result**:
+    -   After `n` iterations, the last `uglyNumber` we polled from the heap is our answer. Cast it to `int` and return.
 
 ---
 
-## 🧮 Step-by-Step Walkthrough
-
-**Input:** `n = 7`
-
-1. Start with `1` in the heap and set.
-2. Extract `1`, add `2`, `3`, `5`.
-3. Extract `2`, add `4`, `6`, `10`.
-4. Extract `3`, add `9`, `15`.
-5. Extract `4`, add `8`, `12`, `20`.
-6. Extract `5`, add `25`.
-7. Extract `6`, add `18`, `30`.
-8. Extract `8` (7th iteration).
-
-**Result:** The 7th ugly number is `8`.
-
----
-
-## 💻 Java Code Implementation
+## 🔥 **Code Implementation**
 
 ```java
 import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 class Solution {
     public int nthUglyNumber(int n) {
+        // A min-heap to store the ugly numbers we've found so far, always giving us the smallest.
         PriorityQueue<Long> minHeap = new PriorityQueue<>();
+        
+        // A set to keep track of ugly numbers we've already added to the heap to avoid duplicates.
         Set<Long> seen = new HashSet<>();
+        
+        // The prime factors that define ugly numbers.
         long[] factors = {2, 3, 5};
 
+        // Start with the first ugly number, 1.
         minHeap.add(1L);
         seen.add(1L);
 
+        // This will hold the ugly number we extract from the heap in each iteration.
         long uglyNumber = 1L;
+
+        // Loop n times to find the n-th ugly number.
         for (int i = 0; i < n; i++) {
+            // Get the smallest ugly number from the heap.
             uglyNumber = minHeap.poll();
+
+            // Generate the next set of ugly numbers by multiplying with the factors.
             for (long factor : factors) {
                 long next = uglyNumber * factor;
+                // If we haven't seen this number before, add it to the heap and the set.
+                // The `seen.add(next)` returns true if the element was successfully added (i.e., not a duplicate).
                 if (seen.add(next)) {
                     minHeap.add(next);
                 }
             }
         }
 
+        // After n iterations, uglyNumber holds the n-th ugly number.
         return (int) uglyNumber;  
     }
 }
@@ -131,51 +102,59 @@ class Solution {
 
 ---
 
-## 🛠️ Programming Workflow
+## 📊 **ASCII Representation**
 
-### Logical Flow (Numbered List)
+The process can be visualized as a tree where each node is an ugly number, and its children are generated by multiplying it by `2`, `3`, and `5`. The Min-Heap helps us explore this tree level by level in a sorted manner.
 
-1. Initialize min-heap and set with `1`.
-2. Repeat `n` times:
-    - Extract smallest ugly number.
-    - For each factor (2, 3, 5):
-        - Multiply and add to heap/set if not seen.
-3. Return the last extracted ugly number.
+```ascii
+         (Poll 1)
+           /|\
+          / | \
+         2  3  5       <-- Heap: [2, 3, 5]
 
-### Flowchart (ASCII Art)
+         (Poll 2)
+         /  |  \
+        4   6  10      <-- Add to heap. Heap becomes: [3, 4, 5, 6, 10]
 
-```
-+-------------------------------+
-| 1. Add 1 to heap and set      |
-+---------------+---------------+
-                |
-                v
-+-------------------------------+
-| 2. Repeat n times:            |
-|   a. Poll min from heap       |
-|   b. For each factor:         |
-|      - Multiply               |
-|      - If not seen, add       |
-+---------------+---------------+
-                |
-                v
-+-------------------------------+
-| 3. Return last polled number  |
-+-------------------------------+
+         (Poll 3)
+         /  |  \
+        6*  9  15      <-- Add 9, 15. (*6 is duplicate). Heap: [4, 5, 6, 9, 10, 15]
+
+         ... and so on
 ```
 
 ---
 
-## ⏱️ Complexity Analysis
+## 📊 **TABLE Representation**
 
-- **Time Complexity:** O(n log n)  
-  - Each heap operation is O(log n), repeated n times.
-- **Space Complexity:** O(n)  
-  - Heap and set store up to n ugly numbers.
+Let's trace the execution for `n = 7`. The goal is to find the 7th ugly number.
+
+| Iteration (i) | Polled `uglyNumber` | Heap State Before Poll | New Candidates (x2, x3, x5) | Heap State After Add | `seen` Set |
+|:-------------:|:-------------------:|:-----------------------|:-----------------------------|:----------------------|:------------|
+| 0 | - | `[1]` | - | `[1]` | `{1}` |
+| 1 | `1` | `[1]` | `2`, `3`, `5` | `[2, 3, 5]` | `{1, 2, 3, 5}` |
+| 2 | `2` | `[2, 3, 5]` | `4`, `6`, `10` | `[3, 4, 5, 6, 10]` | `{..., 4, 6, 10}` |
+| 3 | `3` | `[3, 4, 5, 6, 10]` | `6`(dup), `9`, `15` | `[4, 5, 6, 9, 10, 15]` | `{..., 9, 15}` |
+| 4 | `4` | `[4, 5, 6, 9, 10, 15]` | `8`, `12`, `20` | `[5, 6, 8, 9, 10, 12, 15, 20]`| `{..., 8, 12, 20}`|
+| 5 | `5` | `[5, 6, ...]` | `10`(dup), `15`(dup), `25`| `[6, 8, 9, 10, 12, 15, 20, 25]`| `{..., 25}` |
+| 6 | `6` | `[6, 8, ...]` | `12`(dup), `18`, `30` | `[8, 9, 10, 12, 15, 18, 20, 25, 30]`| `{..., 18, 30}` |
+| 7 | `8` | `[8, 9, ...]` | ... | ... | ... |
+
+After the 7th poll (at `i=6`), the `uglyNumber` is **8**. So, the 7th ugly number is 8.
 
 ---
 
-## 📚 References
+## 🚀 **Time & Space Complexity**
 
-- [LeetCode Problem 264: Ugly Number II](https://leetcode.com/problems/ugly-number-ii/)
-- [PriorityQueue (Java SE Documentation)](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html)
+-   **Time Complexity**: **O(n log n)**
+    -   The main loop runs `n` times to find the n-th ugly number.
+    -   Inside the loop, we perform one `poll()` operation and up to three `add()` operations on the min-heap.
+    -   Both `poll()` and `add()` on a heap of size `k` take `O(log k)` time.
+    -   The size of the heap can grow up to approximately `2n` in this specific problem structure, but it's bounded by `O(n)`.
+    -   Therefore, each iteration takes `O(log n)` time, leading to a total time complexity of **O(n log n)**.
+
+-   **Space Complexity**: **O(n)**
+    -   The space is dominated by the `minHeap` and the `seen` set.
+    -   In the worst case, both data structures will store a number of elements proportional to `n`.
+    -   Thus, the space complexity is **O(n)**.
+    
