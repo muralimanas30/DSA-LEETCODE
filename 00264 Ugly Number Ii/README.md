@@ -7,197 +7,247 @@
 ## 📝 LeetCode Problem
 | 🔢 Problem Number | 📌 Title | 🔗 Link |
 |------------------|--------------------------|--------------------------|
-| 264 | Ugly Number II | [LeetCode Problem](https://leetcode.com/problems/ugly-number-ii/) |
+| 264 | UGLY NUMBER II | [LeetCode Problem](https://leetcode.com/problems/ugly-number-ii/) |
 
 ---
 
 ## 🧩 Problem Statement
-Write a program to find the `n`-th ugly number.
+An **ugly number** is a positive integer whose prime factors are limited to `2`, `3`, and `5`. Given an integer `n`, return the `n`-th ugly number.
 
-Ugly numbers are positive numbers whose prime factors only include `2, 3, 5`.
+The first ugly number is `1`.
 
-**Note:**
+**Constraints:**
+*   `1 <= n <= 1690`
+*   The `n`-th ugly number is guaranteed to fit in a 32-bit signed integer.
 
-*   `1` is typically treated as an ugly number.
-*   `n` does not exceed 1690.
+**Statistics (as of problem creation/last update):**
+*   **Difficulty:** Medium
 
 ## 💡 Problem Explanation
-The problem asks us to find the n-th ugly number in a sequence where ugly numbers are defined as positive numbers whose prime factors are limited to 2, 3, and 5.  The key challenge is to efficiently generate these numbers in ascending order and avoid duplicates.
+The core idea is to understand what constitutes an ugly number. Any ugly number can be formed by multiplying a previous ugly number by `2`, `3`, or `5`. For example, `1` is ugly. Then `1*2=2`, `1*3=3`, `1*5=5` are ugly. From `2`, we get `2*2=4`, `2*3=6`, `2*5=10`. The challenge is to find the *n*-th smallest among all these generated numbers efficiently, ensuring no duplicates and maintaining sorted order.
 
 ## 🧪 Examples
-**Example:**
 
+**Example 1:**
+```
+Input: n = 1
+Output: 1
+Explanation: 1 is the first ugly number.
+```
+
+**Example 2:**
 ```
 Input: n = 10
 Output: 12
-Explanation: [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first 10 ugly numbers.
+Explanation: The first 10 ugly numbers are 1, 2, 3, 4, 5, 6, 8, 9, 10, 12.
 ```
-
----
 
 ## 🧭 Algorithm Overview
-*   Initialize a min-heap to store potential ugly numbers.
-*   Use a hash set to keep track of ugly numbers that have already been added to the heap. This prevents duplicates and optimizes performance.
-*   Start with 1 as the first ugly number and add it to the heap and the hash set.
-*   Iterate `n` times, each time extracting the smallest ugly number from the heap.
-*   For each extracted ugly number, multiply it by 2, 3, and 5 (the allowed prime factors).
-*   If the resulting number hasn't been seen before, add it to the heap and the hash set.
-*   After `n` iterations, the last extracted ugly number is the `n`-th ugly number.
+This problem can be efficiently solved using a **Min-Heap (Priority Queue)** combined with a **HashSet** to manage generated ugly numbers.
 
-This approach was chosen because the heap efficiently keeps track of the smallest generated ugly number at each step, ensuring that we obtain the sequence in ascending order. Using a `HashSet` optimizes the performance, drastically reducing the frequency of redundant calculations and preventing duplication.
+### Key Steps:
+*   🏁 Initialize a min-heap with `1` (as `1` is the first ugly number).
+*   📚 Use a hash set to keep track of all ugly numbers seen so far to avoid duplicates and redundant calculations. Add `1` to this set as well.
+*   🔄 Iterate `n` times:
+    *   Extract the smallest ugly number from the min-heap. This is our current `uglyNumber`.
+    *   For each of the prime factors (`2`, `3`, `5`):
+        *   Multiply `uglyNumber` by the factor to generate a `nextUgly`.
+        *   If `nextUgly` has not been seen before (check using the hash set), add it to both the hash set and the min-heap.
+*   🎯 After `n` iterations, the last `uglyNumber` extracted from the heap will be the `n`-th ugly number.
+
+### Why this approach?
+*   **Min-Heap**: Guarantees that we always process the smallest available ugly number next, ensuring we generate ugly numbers in ascending order.
+*   **HashSet**: Prevents duplicate numbers from being added to the heap. Without it, we would add numbers like `2*3=6` and `3*2=6` multiple times, leading to inefficiency and incorrect ordering if duplicates were not handled.
+*   This approach is a variant of **Dijkstra's algorithm** or **Prim's algorithm** on an implicit graph where nodes are ugly numbers and edges are multiplications by factors 2, 3, 5, always exploring the smallest next value.
 
 ## 🧱 Variables & Data Structures
-
-| Variable    | Data Type         | Description                                                                                 |
-|-------------|-------------------|---------------------------------------------------------------------------------------------|
-| `minHeap`   | `PriorityQueue<Long>` | A min-heap used to store potential ugly numbers, ensuring the smallest is always at the top. |
-| `seen`      | `HashSet<Long>`     | A set to store ugly numbers already processed, preventing duplicates.                     |
-| `factors`   | `long[]`          | An array containing the prime factors allowed (2, 3, and 5).                             |
-| `uglyNumber`| `long`            | Variable to store the current ugly number being processed.                                 |
-| `n`         | `int`             | The input, representing which ugly number in the sequence to find.                        |
-| `next`      | `long` | The candidate number to be added to the heap in the next step.                                 |
-
-## 🔢 Step-by-Step Breakdown
-
-Let's trace the algorithm with `n = 6`.
-
-1.  Initialize `minHeap = [1]`, `seen = {1}`, `factors = [2, 3, 5]`.
-2.  Loop 6 times:
-    *   i = 0: `uglyNumber = 1`.  Multiply by 2, 3, 5.
-        *   2 is new: `minHeap.add(2)`, `seen.add(2)`.
-        *   3 is new: `minHeap.add(3)`, `seen.add(3)`.
-        *   5 is new: `minHeap.add(5)`, `seen.add(5)`.
-        *   `minHeap = [2, 3, 5]`, `seen = {1, 2, 3, 5}`.
-    *   i = 1: `uglyNumber = 2`.  Multiply by 2, 3, 5.
-        *   4 is new: `minHeap.add(4)`, `seen.add(4)`.
-        *   6 is new: `minHeap.add(6)`, `seen.add(6)`.
-        *   10 is new: `minHeap.add(10)`, `seen.add(10)`.
-        *   `minHeap = [3, 4, 5, 6, 10]`, `seen = {1, 2, 3, 4, 5, 6, 10}`.
-    *   i = 2: `uglyNumber = 3`. Multiply by 2, 3, 5.
-        *   6 is seen.
-        *   9 is new: `minHeap.add(9)`, `seen.add(9)`.
-        *   15 is new: `minHeap.add(15)`, `seen.add(15)`.
-        * `minHeap = [4, 5, 6, 9, 10, 15]`, `seen = {1, 2, 3, 4, 5, 6, 9, 10, 15}`
-    *   i = 3: `uglyNumber = 4`. Multiply by 2, 3, 5.
-        *   8 is new: `minHeap.add(8)`, `seen.add(8)`.
-        *   12 is new: `minHeap.add(12)`, `seen.add(12)`.
-        *   20 is new: `minHeap.add(20)`, `seen.add(20)`.
-        * `minHeap = [5, 6, 8, 9, 10, 12, 15, 20]`, `seen = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20}`
-    *   i = 4: `uglyNumber = 5`. Multiply by 2, 3, 5.
-        *   10 is seen.
-        *   15 is seen.
-        *   25 is new: `minHeap.add(25)`, `seen.add(25)`.
-        * `minHeap = [6, 8, 9, 10, 12, 15, 20, 25]`, `seen = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20, 25}`
-    *   i = 5: `uglyNumber = 6`. Multiply by 2, 3, 5.
-        *   12 is seen.
-        *   18 is new: `minHeap.add(18)`, `seen.add(18)`.
-        *   30 is new: `minHeap.add(30)`, `seen.add(30)`.
-        * `minHeap = [8, 9, 10, 12, 15, 18, 20, 25, 30]`, `seen = {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 25, 30}`
-3.  Return 6.
+| Variable/Data Structure | Type                                | Description                                                                                                                              |
+| :---------------------- | :---------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `minHeap`               | `PriorityQueue<Long>`               | Stores candidate ugly numbers in ascending order. `Long` is used to prevent overflow during multiplication before casting back to `int`. |
+| `seen`                  | `Set<Long>`                         | Stores all unique ugly numbers that have been added to the `minHeap` to prevent duplicates.                                              |
+| `factors`               | `long[]` (initialized with `{2, 3, 5}`) | An array containing the prime factors used to generate new ugly numbers.                                                                 |
+| `n`                     | `int`                               | The input integer, representing the `n`-th ugly number we need to find.                                                                |
+| `uglyNumber`            | `long`                              | Stores the current smallest ugly number popped from `minHeap` in each iteration. This will be the result after `n` iterations.          |
+| `next`                  | `long`                              | Temporary variable to store the result of `uglyNumber * factor`.                                                                       |
 
 ## 🧰 Programming Workflow
+This section outlines the logical flow of the Java implementation.
 
-1.  Initialize a `PriorityQueue` called `minHeap` to store potential ugly numbers.
-2.  Initialize a `HashSet` called `seen` to keep track of seen ugly numbers to avoid duplicates.
-3.  Initialize an array `factors` with the values {2, 3, 5}.
-4.  Add 1 to both the `minHeap` and the `seen` set.
-5.  Iterate `n` times.
-6.  In each iteration:
-    *   Poll the smallest number from `minHeap` and store it in `uglyNumber`.
-    *   Iterate through the `factors` array.
-    *   Multiply `uglyNumber` by each `factor` to generate a new potential ugly number (`next`).
-    *   If `next` is not in `seen`:
-        *   Add `next` to `seen`.
-        *   Add `next` to `minHeap`.
-7.  Return `uglyNumber`.
+### 1. Numbered List Workflow
+1.  **Initialization**:
+    *   Create an empty `PriorityQueue<Long>` named `minHeap`.
+    *   Create an empty `HashSet<Long>` named `seen`.
+    *   Define an array `factors` containing `2L`, `3L`, and `5L`.
+    *   Add `1L` to both `minHeap` and `seen` (as `1` is the first ugly number).
+2.  **Iteration**: Loop `n` times to find the `n`-th ugly number.
+    *   **Extract Smallest**: In each iteration, retrieve and remove the smallest element from `minHeap`. Store this value in `uglyNumber`.
+    *   **Generate Next Ugly Numbers**: For each `factor` in the `factors` array:
+        *   Calculate `next = uglyNumber * factor`.
+        *   **Check for Duplicates**: Use `seen.add(next)` which returns `true` if `next` was not already in the set and adds it, or `false` if `next` was already present.
+        *   **Add to Heap**: If `seen.add(next)` returns `true` (meaning `next` is a new ugly number), add `next` to `minHeap`.
+3.  **Return Result**: After the loop finishes, `uglyNumber` will hold the `n`-th ugly number. Cast it to `int` and return it.
 
+### 2. ASCII Flowchart
 ```
-[Start] --> [Initialize minHeap, seen, factors]
-[Initialize minHeap, seen, factors] --> [Add 1 to minHeap and seen]
-[Add 1 to minHeap and seen] --> Loop n times: i = 0 to n-1
-Loop n times: i = 0 to n-1 --> [Poll minHeap to uglyNumber]
-[Poll minHeap to uglyNumber] --> Loop through factors
-Loop through factors --> [Calculate next = uglyNumber * factor]
-[Calculate next = uglyNumber * factor] --> [Is next in seen?]
-[Is next in seen?] -- Yes --> Loop through factors
-[Is next in seen?] -- No --> [Add next to seen and minHeap]
-[Add next to seen and minHeap] --> Loop through factors
-Loop through factors --> Loop n times: i = 0 to n-1
-Loop n times: i = 0 to n-1 --> [Return uglyNumber]
-[Return uglyNumber] --> [End]
++------------------+
+|      START       |
++------------------+
+        |
+        V
++------------------+
+| Init minHeap = {1}|
+| Init seen = {1}  |
+| Init factors = {2,3,5}|
++------------------+
+        |
+        V
++------------------+
+|  loop i from 0   |
+|     to n-1       |
++------------------+
+        |
+        V
++------------------+
+| uglyNumber =     |
+|   minHeap.poll() |
++------------------+
+        |
+        V
++------------------+
+| For each factor  |
+|    in factors    |
++------------------+
+        |
+        V
++------------------+
+|  next =          |
+|  uglyNumber *    |
+|    factor        |
++------------------+
+        |
+        V
++------------------+
+|  IF seen.add(next) |
+|    returns TRUE  |
++------------------+
+        |  YES        | NO
+        V            V
++------------------+ +------------------+
+| minHeap.add(next)| |     (Skip)       |
++------------------+ +------------------+
+        |            |
+        +------------+
+        |
+        V
++------------------+
+|  (End For loop)  |
++------------------+
+        |
+        V
++------------------+
+| (End Main loop)  |
++------------------+
+        |
+        V
++------------------+
+| Return (int)     |
+|   uglyNumber     |
++------------------+
+        |
+        V
++------------------+
+|       END        |
++------------------+
 ```
 
 ## 🔥 Code Implementation
 ```java
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.HashSet;
-
 class Solution {
     public int nthUglyNumber(int n) {
-        PriorityQueue<Long> minHeap = new PriorityQueue<>(); // Min-heap to store ugly numbers.
-        Set<Long> seen = new HashSet<>(); // HashSet to prevent duplicates.
-        long[] factors = {2, 3, 5}; // Prime factors.
+        // Use a min-priority queue to store ugly numbers and retrieve the smallest one efficiently.
+        // Using Long to prevent potential overflow during multiplication (e.g., 5 * MAX_INT / 2 > MAX_INT)
+        PriorityQueue<Long> minHeap = new PriorityQueue<>();
+        
+        // Use a hash set to keep track of all ugly numbers added to the heap
+        // This prevents duplicates and ensures each number is processed only once.
+        Set<Long> seen = new HashSet<>();
+        
+        // The prime factors for generating ugly numbers
+        long[] factors = {2, 3, 5};
 
-        minHeap.add(1L); // Add the first ugly number.
+        // Initialize with the first ugly number (1)
+        minHeap.add(1L);
         seen.add(1L);
 
-        long uglyNumber = 1L; // Initialize the ugly number.
+        long uglyNumber = 1L; // Variable to store the current ugly number extracted
+        
+        // Loop n times to find the n-th ugly number
         for (int i = 0; i < n; i++) {
-            uglyNumber = minHeap.poll(); // Get the smallest ugly number.
+            // Get the smallest ugly number from the heap
+            uglyNumber = minHeap.poll();
+            
+            // For each prime factor, generate the next potential ugly numbers
             for (long factor : factors) {
-                long next = uglyNumber * factor; // Multiply by each factor.
-                if (seen.add(next)) { // If not seen before
-                    minHeap.add(next); // Add to heap.
+                long next = uglyNumber * factor;
+                
+                // If this 'next' number has not been seen before,
+                // add it to the set and the heap.
+                if (seen.add(next)) { // seen.add() returns true if the element was not present
+                    minHeap.add(next);
                 }
             }
         }
 
-        return (int) uglyNumber;  // Return the nth ugly number.
+        // After n iterations, uglyNumber will hold the n-th ugly number.
+        // Cast it back to int as per problem constraints.
+        return (int) uglyNumber;  
     }
 }
+
 ```
 
-## 🧮 ASCII Representation
+## 🧪 Working Demo & Step-by-Step Walkthrough
+Let's trace the algorithm with `n = 10` to find the 10th ugly number.
 
-N/A
+**Initialization:**
+*   `minHeap = {1}`
+*   `seen = {1}`
+*   `factors = {2, 3, 5}`
+*   `uglyNumber = 1`
 
-## 🗂️ Table Representation
+| Iteration `i` | `minHeap` (before poll) | `uglyNumber` (polled) | `next` candidates (factor: val) | `seen` (after adds)       | `minHeap` (after adds)                |
+| :------------ | :---------------------- | :-------------------- | :------------------------------ | :------------------------ | :------------------------------------ |
+| **0**         | `{1}`                   | `1`                   | `2: 2`, `3: 3`, `5: 5`          | `{1, 2, 3, 5}`            | `{2, 3, 5}`                           |
+| **1**         | `{2, 3, 5}`             | `2`                   | `2: 4`, `3: 6`, `5: 10`         | `{1, 2, 3, 4, 5, 6, 10}`  | `{3, 4, 5, 6, 10}`                    |
+| **2**         | `{3, 4, 5, 6, 10}`      | `3`                   | `2: 6` (seen), `3: 9`, `5: 15`  | `{..., 9, 15}`            | `{4, 5, 6, 9, 10, 15}`                |
+| **3**         | `{4, 5, 6, 9, 10, 15}`  | `4`                   | `2: 8`, `3: 12`, `5: 20`        | `{..., 8, 12, 20}`        | `{5, 6, 8, 9, 10, 12, 15, 20}`        |
+| **4**         | `{5, 6, 8, 9, 10, 12, 15, 20}` | `5`                   | `2: 10` (seen), `3: 15` (seen), `5: 25` | `{..., 25}`               | `{6, 8, 9, 10, 12, 15, 20, 25}`       |
+| **5**         | `{6, 8, 9, 10, 12, 15, 20, 25}` | `6`                   | `2: 12` (seen), `3: 18`, `5: 30`| `{..., 18, 30}`           | `{8, 9, 10, 12, 15, 18, 20, 25, 30}`  |
+| **6**         | `{8, 9, 10, 12, 15, 18, 20, 25, 30}` | `8`                   | `2: 16`, `3: 24`, `5: 40`       | `{..., 16, 24, 40}`       | `{9, 10, 12, 15, 16, 18, 20, 24, 25, 30, 40}` |
+| **7**         | `{9, 10, 12, 15, 16, 18, 20, 24, 25, 30, 40}` | `9`                   | `2: 18` (seen), `3: 27`, `5: 45`| `{..., 27, 45}`           | `{10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 40, 45}` |
+| **8**         | `{10, 12, 15, 16, 18, 20, 24, 25, 27, 30, 40, 45}` | `10`                  | `2: 20` (seen), `3: 30` (seen), `5: 50`| `{..., 50}`               | `{12, 15, 16, 18, 20, 24, 25, 27, 30, 40, 45, 50}` |
+| **9**         | `{12, 15, 16, 18, 20, 24, 25, 27, 30, 40, 45, 50}` | `12`                  | `2: 24` (seen), `3: 36`, `5: 60`| `{..., 36, 60}`           | `{15, 16, 18, 20, 24, 25, 27, 30, 36, 40, 45, 50, 60}` |
 
-N/A
-
-## 🧪 Working Demo
-
-Let's trace the algorithm with `n = 5`.
-
-| Iteration | uglyNumber | factor | next | seen                        | minHeap                                  |
-| --------- | ---------- | ------ | ---- | --------------------------- | ---------------------------------------- |
-| Initial   | N/A        | N/A    | N/A  | {1}                         | [1]                                      |
-| 0         | 1          | 2      | 2    | {1, 2}                      | [2]                                      |
-|           |            | 3      | 3    | {1, 2, 3}                   | [2, 3]                                   |
-|           |            | 5      | 5    | {1, 2, 3, 5}                | [2, 3, 5]                                |
-| 1         | 2          | 2      | 4    | {1, 2, 3, 4, 5}             | [3, 4, 5]                                |
-|           |            | 3      | 6    | {1, 2, 3, 4, 5, 6}          | [3, 4, 5, 6]                             |
-|           |            | 5      | 10   | {1, 2, 3, 4, 5, 6, 10}       | [3, 4, 5, 6, 10]                          |
-| 2         | 3          | 2      | 6    | {1, 2, 3, 4, 5, 6, 10}       | [4, 5, 6, 10]                          |
-|           |            | 3      | 9    | {1, 2, 3, 4, 5, 6, 9, 10}    | [4, 5, 6, 9, 10]                       |
-|           |            | 5      | 15   | {1, 2, 3, 4, 5, 6, 9, 10, 15} | [4, 5, 6, 9, 10, 15]                     |
-| 3         | 4          | 2      | 8    | {1, 2, 3, 4, 5, 6, 8, 9, 10, 15} | [5, 6, 8, 9, 10, 15]                   |
-|           |            | 3      | 12   | {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15} | [5, 6, 8, 9, 10, 12, 15]                 |
-|           |            | 5      | 20   | {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20} | [5, 6, 8, 9, 10, 12, 15, 20]               |
-| 4         | 5          | 2      | 10   | {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20} | [6, 8, 9, 10, 12, 15, 20]               |
-|           |            | 3      | 15   | {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20} | [6, 8, 9, 10, 12, 15, 20]               |
-|           |            | 5      | 25   | {1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 20, 25} | [6, 8, 9, 10, 12, 15, 20, 25]             |
-
-Return 5.
+After 10 iterations (i=0 to 9), the `uglyNumber` variable holds `12`.
+Therefore, the 10th ugly number is **12**. ✅
 
 ## 🚀 Time & Space Complexity
 
-*   **Time Complexity:** **O(n log n)**, because each of the n ugly numbers requires a heap insertion and deletion (both O(log n)).
-*   **Space Complexity:** **O(n)**, because the `minHeap` and `seen` set can grow up to size `n`.
+*   **Time Complexity**: `O(N log N)`
+    *   We perform `N` iterations to find the `n`-th ugly number.
+    *   In each iteration, we perform a `poll()` operation on the `minHeap` (which takes `O(log K)` time, where `K` is the size of the heap).
+    *   We also perform up to 3 `add()` operations (for factors 2, 3, 5), each taking `O(log K)` time.
+    *   The maximum size of the heap `K` can be up to `3N` (if all `N` ugly numbers generate 3 new unique candidates that are stored). Thus, `log K` is `log(3N)`, which simplifies to `O(log N)`.
+    *   Therefore, the total time complexity is `N * O(log N) = O(N log N)`.
+
+*   **Space Complexity**: `O(N)`
+    *   The `minHeap` stores at most `3N` ugly numbers at any given time (roughly 3 times the count of ugly numbers already processed).
+    *   The `seen` set stores all `N` ugly numbers generated up to that point.
+    *   Both data structures contribute `O(N)` space.
 
 ## 🔗 References
-
-*   [PriorityQueue (Java)](https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html)
-*   [HashSet (Java)](https://docs.oracle.com/javase/8/docs/api/java/util/HashSet.html)
+*   [LeetCode Discussion - Solution using Min Heap](https://leetcode.com/problems/ugly-number-ii/discuss/69362/Java-Python-Solution-with-heap)
+*   [GeeksForGeeks - Ugly Numbers](https://www.geeksforgeeks.org/ugly-numbers/)
+*   This problem is also solvable using a Dynamic Programming approach with three pointers, which achieves `O(N)` time complexity: [LeetCode Official Solution - DP](https://leetcode.com/problems/ugly-number-ii/solution/) (While not used in this specific implementation, it's a valuable alternative to be aware of).
+```
     
