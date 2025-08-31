@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 USERNAME = "muralimanas30"
 REPO = "DSA-LEETCODE"
 
-# ✅ Visitor counter
+# Visitor counter
 VIEW_BADGE = f"https://views-counter.vercel.app/badge?pageId=https://github.com/{USERNAME}/{REPO}&leftColor=000000&rightColor=0adb3f&type=total&label=Viewers&style=none"
 
-# ✅ LeetCode API
-url = f"https://leetcode-stats-api.herokuapp.com/{USERNAME}"
-resp = requests.get(url).json()
+# Fetch LeetCode stats
+API_URL = f"https://leetcode-stats-api.herokuapp.com/{USERNAME}"
+resp = requests.get(API_URL).json()
 
 solved = resp.get("totalSolved", 0)
 easy = resp.get("easySolved", 0)
@@ -18,7 +18,7 @@ medium = resp.get("mediumSolved", 0)
 hard = resp.get("hardSolved", 0)
 rank = resp.get("ranking", "N/A")
 
-# ✅ Pie chart
+# Generate pie chart
 labels = ["Easy", "Medium", "Hard"]
 sizes = [easy, medium, hard]
 colors = ["#00c853", "#ffab00", "#d50000"]
@@ -30,7 +30,7 @@ plt.savefig("leetcode_pie.png")
 
 PIE_URL = "leetcode_pie.png"
 
-# ✅ Fancy animated card
+# Fancy animated card
 FANCY_CARD_URL = (
     "https://stats.maximjsx.com/api?"
     f"username={USERNAME}"
@@ -39,22 +39,44 @@ FANCY_CARD_URL = (
     "&border_radius=10"
     "&show_icons=true"
     "&title=✨%20DSA%20Progress%20✨"
-    "&description=LeetCode%20+%20GitHub%20stats%20with%20animated%20background"
+    "&description=LeetCode+&+GitHub+stats+with+animated+background"
     "&footer=Keep%20coding%20🔥"
 )
 
-# ✅ Fancy repo highlight card
+# Fancy repo highlight card
 FANCY_REPO_CARD = (
     f"https://stats.maximjsx.com/api/pin/?username={USERNAME}&repo={REPO}&theme=beach&dark_bg=6&show_icons=true"
 )
 
-# ✅ LeetCode ASCII bar
+# LeetCode ASCII bar
 bar = f"[Easy: {'█'* (easy//10)}] [Medium: {'█'* (medium//10)}] [Hard: {'█'* (hard//10)}]"
 
 now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# ✅ README content
-readme = f"""# 📘 {REPO} Dashboard
+# Professional description at top
+description = f"""
+# 🚀 DSA-LEETCODE
+
+Welcome to my **Data Structures & Algorithms journey** ✨  
+This repository is a living log of my problem-solving practice on **LeetCode**, written in **Java 17**.  
+
+The goal is simple:  
+- 🧠 Strengthen problem-solving skills  
+- 🎯 Prepare for coding interviews  
+- 📈 Track progress daily with automated workflows  
+- 💻 Write clean, well-structured, and efficient solutions  
+
+Here you’ll find:
+- ✅ Hundreds of solved problems across **Easy, Medium, and Hard**  
+- 📂 Organized by folders & categories for quick access  
+- 📊 Auto-updated stats, charts, and streaks  
+- 🌟 A visual dashboard to make my growth trackable  
+
+> ⚡ *Consistency beats intensity. One problem a day builds mastery over time.*
+"""
+
+# README content
+readme = f"""{description}
 
 <p align="center">
   <img src="{VIEW_BADGE}" alt="Viewers Counter" />
@@ -86,7 +108,10 @@ readme = f"""# 📘 {REPO} Dashboard
 - **Global Rank**: {rank}  
 
 
+<br/>
+
 {bar}
+<br/>
 
 <p align="center">
   <img src="{PIE_URL}" alt="Difficulty Distribution" width="300"/>
@@ -118,5 +143,5 @@ readme = f"""# 📘 {REPO} Dashboard
 </p>
 """
 
-with open("README.md", "w") as f:
+with open("README.md", "w", encoding="utf-8") as f:
     f.write(readme)
