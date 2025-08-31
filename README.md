@@ -1,7 +1,7 @@
 # 📘 DSA-LEETCODE Dashboard
 
 <p align="center">
-  <img src="https://profile-counter.glitch.me/muralimanas30/count.svg" alt="Visitor Count" />
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/muralimanas30/DSA-LEETCODE&title=Visitors&edge_flat=false" alt="Visitor Counter" />
 </p>
 
 <p align="center">
@@ -16,6 +16,8 @@
 ## 📊 LeetCode Stats
 - **Total Solved**: 535 (Easy 237 / Medium 260 / Hard 38)  
 - **Global Rank**: 138642
+
+
 [█████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 535/3000
 
 
@@ -23,7 +25,7 @@
 
 ## 📉 Problem Distribution
 <p align="center">
-  <img src="leetcode_stats.png" alt="LeetCode Stats Pie Chart" />
+  <img src="https://raw.githubusercontent.com/muralimanas30/DSA-LEETCODE/main/leetcode_stats.png" alt="LeetCode Stats Pie Chart" />
 </p>
 
 ---
@@ -35,12 +37,6 @@
 <p align="center">
   <img src="https://github-readme-activity-graph.vercel.app/graph?username=muralimanas30&theme=tokyo-night&hide_border=true" alt="Activity Graph" />
 </p>
-
----
-
-## 📌 GitHub Metrics
-![Stars](https://img.shields.io/github/stars/muralimanas30/DSA-LEETCODE?style=social)
-![Repo Size](https://img.shields.io/github/repo-size/muralimanas30/DSA-LEETCODE)
 
 ---
 
