@@ -54,19 +54,21 @@ The median is (2 + 3) / 2 = 2.5
 *   Calculate the median of the merged array `nums3`.
 *   If the length of `nums3` is odd, the median is the middle element.
 *   If the length of `nums3` is even, the median is the average of the two middle elements.
-
-This approach was chosen for simplicity and ease of understanding, although it doesn't meet the logarithmic time complexity requirement.
+*   Rationale: chosen for clarity and ease of implementation. Trade-off: O(m+n) time and O(m+n) space. The optimal solution achieves O(log(min(m, n))) using a binary search partition technique without fully merging.
 
 ## 🧱 Variables & Data Structures
 
 | Variable/Data Structure | Description                                                                 |
 |--------------------------|-----------------------------------------------------------------------------|
 | `nums1`                 | The first sorted array.                                                     |
-| `nums2`                 | The second sorted array.                                                     |
+| `nums2`                 | The second sorted array.                                                    |
 | `nums3`                 | A new array to store the merged sorted elements of `nums1` and `nums2`.    |
 | `i`                     | Index pointer for iterating through `nums1`.                                |
 | `j`                     | Index pointer for iterating through `nums2`.                                |
-| `k`                     | Index pointer for inserting elements into `nums3`.                            |
+| `k`                     | Index pointer for inserting elements into `nums3`.                          |
+| `m`                     | Length of `nums1` (i.e., `nums1.length`).                                   |
+| `n`                     | Length of `nums2` (i.e., `nums2.length`).                                   |
+| `median`                | The resulting median value computed from `nums3`.                           |
 
 ## 🔢 Step-by-Step Breakdown
 
@@ -96,20 +98,101 @@ Let's consider `nums1 = [1, 3]` and `nums2 = [2]`.
 7.  Return the median.
 
 ```ascii
-+---------------------+    +---------------------+    +---------------------+
-| Initialize nums3, i, j, k |    | Merge nums1 and nums2 |    | Copy remaining from   |
-+---------------------+    | into nums3           |    | nums1 or nums2      |
-         |                  +---------------------+    +---------------------+
-         |                           |                           |
-         V                           V                           V
-+---------------------+    +---------------------+    +---------------------+
-| Calculate Median      |    | Check if Length Even  |    | Return Median           |
-+---------------------+    | or Odd              |    +---------------------+
-         |                  +---------------------+
-         |
-         V
-     End
++------------------------------+
+| Start                        |
++--------------+---------------+
+               |
+               v
++--------------+---------------+
+| Init nums3, i=0, j=0, k=0    |
++--------------+---------------+
+               |
+               v
+       +-------+--------+
+       | i<m AND j<n ?  |
+       +-------+--------+
+               | Yes
+               v
+   +-----------+-----------+
+   | nums1[i] <= nums2[j]? |
+   +-----------+-----------+
+       | Yes               | No
+       v                   v
++------+------+       +----+-----+
+| nums3[k]= |       | nums3[k]= |
+| nums1[i]  |       | nums2[j]  |
++------+------+       +----+-----+
+   i++,k++               j++,k++
+       \                   /
+        \                 /
+         \               /
+          v             v
+           +-----------+
+           |   Loop    |
+           +-----------+
+               |
+               v
++--------------+---------------+
+| Copy remaining from nums1/2  |
++--------------+---------------+
+               |
+               v
++--------------+---------------+
+| Compute median from nums3     |
++--------------+---------------+
+               |
+               v
++--------------+---------------+
+| Return median                 |
++------------------------------+
 ```
+
+## 🧮 ASCII Merge Visualization
+
+Example: nums1 = [1, 3], nums2 = [2]
+
+Step 1:
+nums1: [1, 3]
+         ^
+         i=0
+nums2: [2]
+        ^
+        j=0
+nums3: []
+       ^
+       k=0
+Choose 1 -> nums3 = [1]
+
+Step 2:
+nums1: [1, 3]
+            ^
+            i=1
+nums2: [2]
+        ^
+        j=0
+nums3: [1]
+        ^
+        k=1
+Choose 2 -> nums3 = [1, 2]
+
+Step 3:
+nums1: [1, 3]
+               ^
+               i=2 (after copy)
+nums2: [2]
+           ^
+           j=1 (done)
+nums3: [1, 2, 3]
+             ^
+             k=3
+
+## 🗂️ Table Representation
+
+| Step | i | j | k | Chosen | nums3 snapshot |
+|-----:|---|---|---|--------|----------------|
+| 1    | 0 | 0 | 0 | 1      | [1]            |
+| 2    | 1 | 0 | 1 | 2      | [1, 2]         |
+| 3    | 1 | 1 | 2 | 3      | [1, 2, 3]      |
 
 ## 🔥 Code Implementation
 
@@ -140,24 +223,7 @@ class Solution {
 }
 ```
 
-## 🗂️ Table Representation
-N/A
-
-## 🧪 Working Demo
-
-For `nums1 = [1, 3]` and `nums2 = [2]`:
-
-1.  `nums3` is initialized: `[]`
-2.  After merging: `nums3 = [1, 2, 3]`
-3.  Length of `nums3` is 3 (odd).
-4.  Median is `nums3[3/2] = nums3[1] = 2`.
-
-## 🚀 Time & Space Complexity
-
-*   **Time Complexity: O(m+n)** - due to merging the two sorted arrays into a new array.
-*   **Space Complexity: O(m+n)** -  due to the creation of a new array `nums3` to store the merged elements.
-
 ## 🔗 References
 
 *   [Merge Sort Algorithm](https://en.wikipedia.org/wiki/Merge_sort)
-    
+*   Optimal O(log(min(m,n))) approach (binary search partition): https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/
