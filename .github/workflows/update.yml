@@ -1,0 +1,50 @@
+name: Update Index
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Install google-java-format
+      run: sudo apt-get install google-java-format -y
+
+    - name: Check Java formatting
+      run: |
+        find . -name "Solution.java" | while read file; do
+          google-java-format --dry-run "$file" || (
+            echo "Formatting issues in $file";
+            exit 1
+          )
+        done
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Generate index
+      run: python3 generate_index.py
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add README.md
+        if ! git diff --cached --quiet; then
+          git commit -m "Auto-update README index"
+          git push
+        fi
