@@ -1,6 +1,7 @@
 import requests
 import datetime
 import matplotlib.pyplot as plt
+import os
 
 USERNAME = "muralimanas30"
 REPO = "DSA-LEETCODE"
@@ -22,7 +23,7 @@ def build_progress_bar(solved, total=3000, length=30):
     return f"[{bar}] {solved}/{total}"
 
 def generate_pie_chart(easy, medium, hard):
-    """Generate a pie chart of solved problems"""
+    """Generate a pie chart and save it in repo"""
     labels = ["Easy", "Medium", "Hard"]
     values = [easy, medium, hard]
     colors = ["#4CAF50", "#FFC107", "#F44336"]
@@ -47,12 +48,13 @@ def main():
     # generate chart
     generate_pie_chart(easy, medium, hard)
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # raw link to pie chart (after commit by workflow)
+    pie_chart_url = f"https://raw.githubusercontent.com/{USERNAME}/{REPO}/main/leetcode_stats.png"
 
     readme = f"""# 📘 DSA-LEETCODE Dashboard
 
 <p align="center">
-  <img src="https://profile-counter.glitch.me/{USERNAME}/count.svg" alt="Visitor Count" />
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/{USERNAME}/{REPO}&title=Visitors&edge_flat=false" alt="Visitor Counter" />
 </p>
 
 <p align="center">
@@ -67,6 +69,8 @@ def main():
 ## 📊 LeetCode Stats
 - **Total Solved**: {solved} (Easy {easy} / Medium {medium} / Hard {hard})  
 - **Global Rank**: {rank}
+
+
 {progress}
 
 
@@ -74,7 +78,7 @@ def main():
 
 ## 📉 Problem Distribution
 <p align="center">
-  <img src="leetcode_stats.png" alt="LeetCode Stats Pie Chart" />
+  <img src="{pie_chart_url}" alt="LeetCode Stats Pie Chart" />
 </p>
 
 ---
@@ -86,12 +90,6 @@ def main():
 <p align="center">
   <img src="https://github-readme-activity-graph.vercel.app/graph?username={USERNAME}&theme=tokyo-night&hide_border=true" alt="Activity Graph" />
 </p>
-
----
-
-## 📌 GitHub Metrics
-![Stars](https://img.shields.io/github/stars/{USERNAME}/{REPO}?style=social)
-![Repo Size](https://img.shields.io/github/repo-size/{USERNAME}/{REPO})
 
 ---
 
@@ -110,5 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
